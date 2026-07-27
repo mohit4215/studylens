@@ -5,7 +5,6 @@ const nextConfig = {
     unoptimized: true,
   },
   basePath: process.env.GITHUB_ACTIONS ? '/whystock' : '',
-  assetPrefix: process.env.GITHUB_ACTIONS ? '/whystock/' : '',
 }
 
 module.exports = nextConfig
