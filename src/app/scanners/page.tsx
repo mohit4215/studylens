@@ -16,16 +16,16 @@ const SCANNERS = [
   { key: 'macd-bullish',         title: 'MACD Bullish Crossover',desc: 'MACD line crossed above signal line', icon: '⚡', tag: 'Momentum' },
 ]
 
-export default async function ScannersPage({ searchParams }: { searchParams: { type?: string } }) {
-  const activeType = searchParams.type || 'high-volume-breakout'
-  const results = getMockScannerResults(activeType)
+export default function ScannersPage() {
+  const initialType = 'high-volume-breakout'
+  const results = getMockScannerResults(initialType)
 
   return (
     <div className="min-h-screen pt-20 pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <ScannersClient
           scanners={SCANNERS}
-          initialType={activeType}
+          initialType={initialType}
           initialResults={results}
         />
       </div>
