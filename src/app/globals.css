@@ -1,0 +1,222 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── CSS Custom Properties ──────────────────────────────────────────────── */
+:root {
+  --color-surface:     #0a0d14;
+  --color-surface-50:  #141720;
+  --color-surface-100: #1a1f2e;
+  --color-surface-200: #212638;
+  --color-surface-300: #2a3045;
+  --color-bull:  #00d97e;
+  --color-bear:  #ff4d6d;
+  --color-warn:  #ffb038;
+  --color-info:  #2aadff;
+  --color-brand: #2aadff;
+  --border-default: rgba(255, 255, 255, 0.07);
+  --border-strong:  rgba(255, 255, 255, 0.14);
+  --radius-card: 16px;
+  --radius-button: 10px;
+}
+
+/* ─── Base Styles ────────────────────────────────────────────────────────── */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-surface);
+  color: #f0f4ff;
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--color-surface-50); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+/* Selection color */
+::selection { background: rgba(42, 173, 255, 0.25); color: #f0f4ff; }
+
+/* ─── Glass Card ─────────────────────────────────────────────────────────── */
+@layer components {
+  .glass-card {
+    @apply relative rounded-2xl border border-white/[0.07] bg-white/[0.03] backdrop-blur-sm;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.07);
+  }
+
+  .glass-card-hover {
+    @apply glass-card transition-all duration-300 hover:border-white/[0.14] hover:bg-white/[0.05];
+    &:hover { box-shadow: 0 8px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1); }
+  }
+
+  /* Shimmer skeleton */
+  .skeleton {
+    @apply rounded-lg bg-white/[0.05] relative overflow-hidden;
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255,255,255,0.06) 50%,
+        transparent 100%
+      );
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
+  }
+
+  /* Bull / Bear badges */
+  .badge-bull {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold;
+    background: rgba(0, 217, 126, 0.15);
+    color: var(--color-bull);
+    border: 1px solid rgba(0, 217, 126, 0.25);
+  }
+
+  .badge-bear {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold;
+    background: rgba(255, 77, 109, 0.15);
+    color: var(--color-bear);
+    border: 1px solid rgba(255, 77, 109, 0.25);
+  }
+
+  .badge-neutral {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold;
+    background: rgba(139, 149, 176, 0.15);
+    color: #8b95b0;
+    border: 1px solid rgba(139, 149, 176, 0.25);
+  }
+
+  /* Gradient text */
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, #2aadff 0%, #7b5fdb 50%, #2aadff 100%);
+    background-size: 200% auto;
+    animation: gradient-shift 4s linear infinite;
+  }
+
+  /* Button variants */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm
+           text-surface bg-brand-500 hover:bg-brand-400 transition-all duration-200
+           shadow-glow-blue hover:shadow-none active:scale-[0.98];
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-medium text-sm
+           text-text-secondary hover:text-text-primary hover:bg-white/[0.05]
+           border border-transparent hover:border-white/[0.07]
+           transition-all duration-200;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-medium text-sm
+           text-brand-400 border border-brand-500/30 hover:border-brand-500/60 hover:bg-brand-500/10
+           transition-all duration-200;
+  }
+
+  /* Signal pills */
+  .pill-buy {
+    @apply px-2.5 py-1 rounded-lg text-xs font-bold tracking-wide;
+    background: rgba(0,217,126,0.15);
+    color: #00d97e;
+  }
+  .pill-sell {
+    @apply px-2.5 py-1 rounded-lg text-xs font-bold tracking-wide;
+    background: rgba(255,77,109,0.15);
+    color: #ff4d6d;
+  }
+  .pill-neutral {
+    @apply px-2.5 py-1 rounded-lg text-xs font-bold tracking-wide;
+    background: rgba(255,176,56,0.15);
+    color: #ffb038;
+  }
+
+  /* Section title */
+  .section-title {
+    @apply text-lg font-bold text-text-primary flex items-center gap-2.5;
+  }
+
+  /* Divider */
+  .divider {
+    @apply h-px w-full bg-white/[0.06] my-4;
+  }
+
+  /* Ticker tape */
+  .ticker-wrap {
+    @apply overflow-hidden whitespace-nowrap;
+  }
+  .ticker-inner {
+    @apply inline-flex gap-8;
+    animation: ticker 40s linear infinite;
+    will-change: transform;
+  }
+  .ticker-inner:hover {
+    animation-play-state: paused;
+  }
+}
+
+/* ─── Keyframes ──────────────────────────────────────────────────────────── */
+@keyframes gradient-shift {
+  0%   { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes ticker {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(42,173,255,0.2); }
+  50%       { box-shadow: 0 0 40px rgba(42,173,255,0.4); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ─── TradingView Chart Overrides ────────────────────────────────────────── */
+.chart-container iframe { border-radius: 12px; }
+
+/* ─── Number formatting ──────────────────────────────────────────────────── */
+.tabular-nums { font-variant-numeric: tabular-nums; }
+
+/* ─── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .glass-card { @apply rounded-xl; }
+}
