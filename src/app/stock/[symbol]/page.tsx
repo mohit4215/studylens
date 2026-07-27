@@ -21,6 +21,21 @@ interface PageProps {
   params: { symbol: string }
 }
 
+export async function generateStaticParams() {
+  return [
+    { symbol: 'RELIANCE' },
+    { symbol: 'TATAMOTORS' },
+    { symbol: 'SBIN' },
+    { symbol: 'INFY' },
+    { symbol: 'HDFCBANK' },
+    { symbol: 'ICICIBANK' },
+    { symbol: 'WIPRO' },
+    { symbol: 'MARUTI' },
+    { symbol: 'TCS' },
+    { symbol: 'TATASTEEL' },
+  ]
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const symbol = params.symbol.toUpperCase()
   return {
