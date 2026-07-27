@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StockLens AI — Understand WHY Every Stock Moves</title>
+  <meta name="description" content="AI-powered stock analysis for Indian markets. Explains why any NSE/BSE stock moves in plain English.">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            surface: { DEFAULT: '#0a0d14', 50: '#141720', 100: '#1a1f2e', 200: '#212638', 300: '#2a3045' },
+            bull: '#00d97e',
+            bear: '#ff4d6d',
+            warn: '#ffb038',
+            info: '#2aadff',
+            brand: { 400: '#54caff', 500: '#2aadff', 600: '#0d8ef5' },
+            text: { primary: '#f0f4ff', secondary: '#8b95b0', muted: '#4a5270' }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    body { background-color: #0a0d14; color: #f0f4ff; font-family: 'Inter', sans-serif; }
+    .glass-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(12px); border-radius: 1rem; }
+    .glass-card-hover { transition: all 0.3s ease; }
+    .glass-card-hover:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.15); box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+    .gradient-text { background: linear-gradient(135deg, #2aadff 0%, #7b5fdb 50%, #2aadff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .btn-primary { background: #2aadff; color: #0a0d14; font-weight: 700; border-radius: 0.75rem; transition: all 0.2s ease; box-shadow: 0 0 20px rgba(42,173,255,0.3); }
+    .btn-primary:hover { background: #54caff; transform: translateY(-1px); }
+    .btn-ghost { background: transparent; color: #8b95b0; border-radius: 0.75rem; transition: all 0.2s ease; border: 1px solid transparent; }
+    .btn-ghost:hover { background: rgba(255,255,255,0.05); color: #f0f4ff; border-color: rgba(255,255,255,0.08); }
+    ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #141720; } ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-brand-500/30 selection:text-white">
+
+  <!-- NAVBAR -->
+  <header class="fixed top-0 left-0 right-0 z-40 bg-surface/80 backdrop-blur-xl border-b border-white/[0.06]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <!-- Logo -->
+      <a href="#" onclick="showView('home'); return false;" class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-xl bg-brand-500 flex items-center justify-center shadow-lg shadow-brand-500/30">
+          <i data-lucide="trending-up" class="w-4 h-4 text-surface font-black"></i>
+        </div>
+        <span class="font-bold text-lg">
+          <span class="gradient-text">StockLens</span>
+          <span class="text-text-secondary font-normal text-sm ml-1">AI</span>
+        </span>
+      </a>
+
+      <!-- Search Bar -->
+      <div class="relative hidden md:block max-w-md w-full mx-6">
+        <div class="relative">
+          <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted"></i>
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Search NSE/BSE stocks… RELIANCE, TATAMOTORS (Ctrl+K)"
+            oninput="handleSearchInput(this.value)"
+            onkeydown="handleSearchKeyDown(event)"
+            class="w-full pl-10 pr-12 py-2 rounded-xl text-sm bg-white/[0.05] border border-white/[0.08] text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand-500/50"
+          >
+          <kbd class="absolute right-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded text-[10px] bg-white/10 text-text-muted font-mono">⌘K</kbd>
+        </div>
+        <!-- Search Dropdown -->
+        <div id="searchDropdown" class="hidden absolute top-full left-0 right-0 mt-2 glass-card p-2 shadow-2xl z-50 max-h-80 overflow-y-auto"></div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center gap-1">
+        <button onclick="showView('dashboard')" class="btn-ghost px-3 py-2 text-sm font-medium flex items-center gap-1.5"><i data-lucide="bar-chart-2" class="w-4 h-4"></i> Dashboard</button>
+        <button onclick="showView('scanners')" class="btn-ghost px-3 py-2 text-sm font-medium flex items-center gap-1.5"><i data-lucide="zap" class="w-4 h-4 text-warn"></i> Scanners</button>
+        <button onclick="showView('watchlist')" class="btn-ghost px-3 py-2 text-sm font-medium flex items-center gap-1.5"><i data-lucide="eye" class="w-4 h-4"></i> Watchlist</button>
+        <button onclick="showView('portfolio')" class="btn-ghost px-3 py-2 text-sm font-medium flex items-center gap-1.5"><i data-lucide="pie-chart" class="w-4 h-4"></i> Portfolio</button>
+        <button onclick="showView('pricing')" class="btn-ghost px-3 py-2 text-sm font-medium flex items-center gap-1.5"><i data-lucide="gem" class="w-4 h-4 text-brand-400"></i> Pricing</button>
+        <button onclick="openModal('screenshotModal')" class="p-2 btn-ghost text-brand-400" title="Upload Chart Screenshot for AI Analysis"><i data-lucide="camera" class="w-4 h-4"></i></button>
+      </nav>
+
+      <!-- Mobile Menu Toggle -->
+      <button onclick="toggleMobileMenu()" class="md:hidden btn-ghost p-2"><i data-lucide="menu" class="w-5 h-5"></i></button>
+    </div>
+
+    <!-- Mobile Nav -->
+    <div id="mobileMenu" class="hidden md:hidden border-t border-white/10 bg-surface-50 p-4 space-y-2">
+      <input type="text" placeholder="Search stock…" oninput="handleSearchInput(this.value)" class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-sm mb-2">
+      <button onclick="showView('dashboard'); toggleMobileMenu()" class="w-full text-left px-3 py-2 rounded-xl hover:bg-white/5 text-sm">📊 Dashboard</button>
+      <button onclick="showView('scanners'); toggleMobileMenu()" class="w-full text-left px-3 py-2 rounded-xl hover:bg-white/5 text-sm">⚡ Scanners</button>
+      <button onclick="showView('watchlist'); toggleMobileMenu()" class="w-full text-left px-3 py-2 rounded-xl hover:bg-white/5 text-sm">👁️ Watchlist</button>
+      <button onclick="showView('portfolio'); toggleMobileMenu()" class="w-full text-left px-3 py-2 rounded-xl hover:bg-white/5 text-sm">💼 Portfolio</button>
+      <button onclick="showView('pricing'); toggleMobileMenu()" class="w-full text-left px-3 py-2 rounded-xl hover:bg-white/5 text-sm">💎 Pricing</button>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="flex-1 pt-20 pb-16">
+
+    <!-- HOME VIEW -->
+    <div id="view-home" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+      <!-- Hero -->
+      <div class="text-center py-12 max-w-4xl mx-auto">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-400 text-xs font-semibold mb-6">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Powered by GPT-4o · Real-time NSE/BSE Analytics
+        </div>
+        <h1 class="text-4xl sm:text-6xl font-black tracking-tight leading-tight mb-6">
+          Understand <span class="gradient-text">WHY</span><br>every stock moves.
+        </h1>
+        <p class="text-text-secondary text-lg max-w-2xl mx-auto mb-8">
+          Instant AI explanations covering news catalysts, technical breakdowns, options PCR, FII delivery data, and risk levels in plain English.
+        </p>
+
+        <!-- Quick Stock Chips -->
+        <div className="flex flex-wrap justify-center gap-2">
+          <span class="text-xs text-text-muted py-1">Trending:</span>
+          <button onclick="openStock('RELIANCE')" class="px-3 py-1 rounded-lg bg-white/5 hover:bg-brand-500/20 text-xs font-medium text-text-secondary hover:text-brand-400 border border-white/5">RELIANCE +1.99%</button>
+          <button onclick="openStock('TATAMOTORS')" class="px-3 py-1 rounded-lg bg-white/5 hover:bg-brand-500/20 text-xs font-medium text-text-secondary hover:text-brand-400 border border-white/5">TATAMOTORS +2.53%</button>
+          <button onclick="openStock('SBIN')" class="px-3 py-1 rounded-lg bg-white/5 hover:bg-brand-500/20 text-xs font-medium text-text-secondary hover:text-brand-400 border border-white/5">SBIN -1.51%</button>
+          <button onclick="openStock('INFY')" class="px-3 py-1 rounded-lg bg-white/5 hover:bg-brand-500/20 text-xs font-medium text-text-secondary hover:text-brand-400 border border-white/5">INFY +1.98%</button>
+          <button onclick="openStock('HDFCBANK')" class="px-3 py-1 rounded-lg bg-white/5 hover:bg-brand-500/20 text-xs font-medium text-text-secondary hover:text-brand-400 border border-white/5">HDFCBANK +1.10%</button>
+          <button onclick="openStock('MARUTI')" class="px-3 py-1 rounded-lg bg-white/5 hover:bg-brand-500/20 text-xs font-medium text-text-secondary hover:text-brand-400 border border-white/5">MARUTI +2.76%</button>
+        </div>
+      </div>
+
+      <!-- Market Indices Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="glass-card p-5 border-bull/20">
+          <div class="text-xs text-text-muted font-medium mb-1">NIFTY 50</div>
+          <div class="text-2xl font-black tabular-nums">24,856.15</div>
+          <div class="text-sm font-semibold text-bull flex items-center gap-1 mt-1"><i data-lucide="trending-up" class="w-3.5 h-3.5"></i> +312.45 (+1.27%)</div>
+        </div>
+        <div class="glass-card p-5 border-bull/20">
+          <div class="text-xs text-text-muted font-medium mb-1">SENSEX</div>
+          <div class="text-2xl font-black tabular-nums">81,432.65</div>
+          <div class="text-sm font-semibold text-bull flex items-center gap-1 mt-1"><i data-lucide="trending-up" class="w-3.5 h-3.5"></i> +1,024.80 (+1.27%)</div>
+        </div>
+        <div class="glass-card p-5 border-bear/20">
+          <div class="text-xs text-text-muted font-medium mb-1">BANK NIFTY</div>
+          <div class="text-2xl font-black tabular-nums">52,847.30</div>
+          <div class="text-sm font-semibold text-bear flex items-center gap-1 mt-1"><i data-lucide="trending-down" class="w-3.5 h-3.5"></i> -245.60 (-0.46%)</div>
+        </div>
+        <div class="glass-card p-5 border-bull/20">
+          <div class="text-xs text-text-muted font-medium mb-1">NIFTY MIDCAP 100</div>
+          <div class="text-2xl font-black tabular-nums">56,789.40</div>
+          <div class="text-sm font-semibold text-bull flex items-center gap-1 mt-1"><i data-lucide="trending-up" class="w-3.5 h-3.5"></i> +445.20 (+0.79%)</div>
+        </div>
+      </div>
+
+      <!-- Fear & Greed + FII/DII -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Fear & Greed Meter -->
+        <div class="glass-card p-6 flex flex-col items-center justify-center text-center">
+          <div class="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">Fear &amp; Greed Index</div>
+          <div class="text-5xl font-black text-bull mb-1">68</div>
+          <div class="text-sm font-bold text-bull mb-2">Greed</div>
+          <p class="text-xs text-text-secondary max-w-xs">Market sentiment is optimistic driven by FII inflows and solid corporate earnings.</p>
+        </div>
+
+        <!-- FII / DII -->
+        <div class="glass-card p-6 space-y-3">
+          <div class="text-xs font-semibold text-text-muted uppercase tracking-wider">Institutional Net Flows (Today)</div>
+          <div class="flex justify-between items-center text-sm">
+            <span class="text-text-secondary font-medium">FII Net Buy</span>
+            <span class="font-bold text-bull">+₹2,840 Cr</span>
+          </div>
+          <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden"><div class="bg-bull h-full" style="width:75%"></div></div>
+          <div class="flex justify-between items-center text-sm pt-2">
+            <span class="text-text-secondary font-medium">DII Net Sell</span>
+            <span class="font-bold text-bear">-₹1,240 Cr</span>
+          </div>
+          <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden"><div class="bg-bear h-full" style="width:40%"></div></div>
+        </div>
+
+        <!-- Market Breadth -->
+        <div class="glass-card p-6 space-y-3">
+          <div class="text-xs font-semibold text-text-muted uppercase tracking-wider">Market Breadth</div>
+          <div class="flex justify-between text-sm"><span class="text-bull font-medium">▲ Advancing</span><span class="font-bold">1,478</span></div>
+          <div class="flex justify-between text-sm"><span class="text-bear font-medium">▼ Declining</span><span class="font-bold">892</span></div>
+          <div class="flex justify-between text-sm"><span class="text-text-muted">→ Unchanged</span><span class="font-bold">145</span></div>
+          <div class="border-t border-white/10 pt-2 flex justify-between text-sm">
+            <span class="text-text-secondary">Advance/Decline Ratio</span>
+            <span class="font-bold text-bull">1.66</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Daily Market Summary -->
+      <div class="glass-card p-6 border-brand-500/20">
+        <div class="flex items-center gap-2 mb-3">
+          <i data-lucide="sparkles" class="w-5 h-5 text-brand-400"></i>
+          <h2 class="text-lg font-bold">AI Market Daily Digest</h2>
+        </div>
+        <p class="text-sm text-text-secondary leading-relaxed mb-4">
+          Indian markets closed on a strong positive note with Nifty 50 gaining 1.27% driven by broad-based buying. FII inflows of ₹2,840 crore provided strong tailwinds while metals (+2.14%) and auto (+1.85%) sectors led the rally.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div class="p-3 rounded-xl bg-white/5 text-xs text-text-secondary flex items-start gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-bull shrink-0 mt-0.5"></i> Tata Motors Q1 FY26 earnings beat estimates by 15% — shares hit 52-week high.</div>
+          <div class="p-3 rounded-xl bg-white/5 text-xs text-text-secondary flex items-start gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-bull shrink-0 mt-0.5"></i> Reliance Industries breakout confirmed above ₹2,950 resistance with 1.8x volume.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STOCK DETAIL VIEW -->
+    <div id="view-stock" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+      <!-- Stock Header -->
+      <div class="glass-card p-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-3">
+              <h1 id="stockSymbol" class="text-3xl font-black">RELIANCE</h1>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-brand-500/20 text-brand-400 border border-brand-500/30">NSE</span>
+              <span id="stockSector" class="text-xs text-text-muted">Energy · Oil &amp; Gas</span>
+            </div>
+            <p id="stockName" class="text-sm text-text-secondary mt-1">Reliance Industries Ltd</p>
+          </div>
+          <div class="text-right">
+            <div id="stockPrice" class="text-3xl font-black tabular-nums">₹2,987.45</div>
+            <div id="stockChange" class="text-sm font-bold text-bull flex items-center justify-end gap-1"><i data-lucide="trending-up" class="w-4 h-4"></i> +58.30 (+1.99%)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <!-- Main Column (Left) -->
+        <div class="xl:col-span-2 space-y-6">
+          <!-- AI Summary Card -->
+          <div class="glass-card p-6 border-brand-500/30">
+            <div class="flex items-center gap-2 text-brand-400 font-bold text-sm mb-3">
+              <i data-lucide="sparkles" class="w-4 h-4"></i> AI Reasoning &amp; Summary
+            </div>
+            <p id="aiSummaryText" class="text-sm text-text-secondary leading-relaxed mb-4">
+              Gaining strongly today driven by a powerful combination of better-than-expected quarterly earnings, heavy institutional accumulation, bullish technical breakout above key resistance levels, and strong positive momentum across the broader sector.
+            </p>
+            <div class="space-y-2">
+              <div class="text-xs font-semibold text-text-muted uppercase">Key Drivers</div>
+              <div id="aiDrivers" class="flex flex-wrap gap-2"></div>
+            </div>
+          </div>
+
+          <!-- Price Chart (Interactive Canvas) -->
+          <div class="glass-card p-6 space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="font-bold text-base flex items-center gap-2"><i data-lucide="line-chart" class="w-4 h-4 text-brand-400"></i> Interactive Price Chart</h3>
+              <div class="flex gap-1 bg-white/5 p-1 rounded-xl">
+                <button onclick="renderChart('1D')" class="px-2.5 py-1 text-xs rounded-lg hover:bg-white/10">1D</button>
+                <button onclick="renderChart('1M')" class="px-2.5 py-1 text-xs rounded-lg hover:bg-white/10">1M</button>
+                <button onclick="renderChart('3M')" class="px-2.5 py-1 text-xs rounded-lg bg-brand-500 text-surface font-bold">3M</button>
+                <button onclick="renderChart('1Y')" class="px-2.5 py-1 text-xs rounded-lg hover:bg-white/10">1Y</button>
+              </div>
+            </div>
+            <canvas id="chartCanvas" width="700" height="260" class="w-full h-64"></canvas>
+          </div>
+
+          <!-- News & Catalysts -->
+          <div class="glass-card p-6 space-y-4">
+            <h3 class="font-bold text-base flex items-center gap-2"><i data-lucide="newspaper" class="w-4 h-4 text-info"></i> Latest News &amp; Catalysts</h3>
+            <div id="newsContainer" class="space-y-3"></div>
+          </div>
+
+          <!-- Technical Signals -->
+          <div class="glass-card p-6 space-y-4">
+            <h3 class="font-bold text-base flex items-center gap-2"><i data-lucide="sliders" class="w-4 h-4 text-warn"></i> Technical Signals &amp; Indicators</h3>
+            <div id="signalsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+          </div>
+
+          <!-- Options & Delivery -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="glass-card p-6 space-y-3">
+              <h4 class="font-bold text-sm text-text-primary">Options Chain &amp; PCR</h4>
+              <div class="flex justify-between text-sm"><span class="text-text-muted">Put-Call Ratio (PCR)</span><span class="font-bold text-bull">1.24 (Bullish)</span></div>
+              <div class="flex justify-between text-sm"><span class="text-text-muted">Max Pain Strike</span><span class="font-bold">₹2,950</span></div>
+              <div class="flex justify-between text-sm"><span class="text-text-muted">Implied Volatility (IV)</span><span class="font-bold">18.4%</span></div>
+            </div>
+
+            <div class="glass-card p-6 space-y-3">
+              <h4 class="font-bold text-sm text-text-primary">Volume &amp; Delivery</h4>
+              <div class="flex justify-between text-sm"><span class="text-text-muted">Delivery Percentage</span><span class="font-bold text-bull">62.4% (High)</span></div>
+              <div class="flex justify-between text-sm"><span class="text-text-muted">Delivery Volume</span><span class="font-bold">7.8M shares</span></div>
+              <div class="flex justify-between text-sm"><span class="text-text-muted">Institutional Stance</span><span class="font-bold text-bull">Strong Buying</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar (Right) -->
+        <div class="space-y-6">
+          <!-- AI Chat Bot -->
+          <div class="glass-card p-5 flex flex-col h-[480px]">
+            <div class="flex items-center gap-2 pb-3 border-b border-white/10">
+              <i data-lucide="bot" class="w-5 h-5 text-brand-400"></i>
+              <div class="font-bold text-sm">StockLens AI Assistant</div>
+            </div>
+            <div id="chatMessages" class="flex-1 overflow-y-auto py-3 space-y-3 text-xs">
+              <div class="p-3 rounded-xl bg-white/5 text-text-secondary leading-relaxed">
+                Hi! Ask me anything about this stock — support levels, price targets, stop loss, or fundamental health.
+              </div>
+            </div>
+            <div class="pt-2 flex gap-1 overflow-x-auto pb-2">
+              <button onclick="sendChatMessage('What is the support level?')" class="text-[10px] px-2 py-1 rounded bg-white/5 hover:bg-white/10 shrink-0">Support level?</button>
+              <button onclick="sendChatMessage('Is this a good buy?')" class="text-[10px] px-2 py-1 rounded bg-white/5 hover:bg-white/10 shrink-0">Good buy?</button>
+              <button onclick="sendChatMessage('What is the target?')" class="text-[10px] px-2 py-1 rounded bg-white/5 hover:bg-white/10 shrink-0">Target price?</button>
+            </div>
+            <div class="flex gap-2">
+              <input type="text" id="chatInput" onkeydown="if(event.key==='Enter') sendChatMessage()" placeholder="Ask AI assistant..." class="flex-1 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs">
+              <button onclick="sendChatMessage()" class="p-2 btn-primary rounded-xl"><i data-lucide="send" class="w-3.5 h-3.5"></i></button>
+            </div>
+          </div>
+
+          <!-- Quick Stats -->
+          <div class="glass-card p-5 space-y-3">
+            <h4 class="font-bold text-sm">Fundamental Ratios</h4>
+            <div class="flex justify-between text-xs"><span class="text-text-muted">P/E Ratio</span><span id="statPE" class="font-bold">28.4</span></div>
+            <div class="flex justify-between text-xs"><span class="text-text-muted">P/B Ratio</span><span id="statPB" class="font-bold">2.1</span></div>
+            <div class="flex justify-between text-xs"><span class="text-text-muted">Market Cap</span><span id="statCap" class="font-bold">₹20.28L Cr</span></div>
+            <div class="flex justify-between text-xs"><span class="text-text-muted">52W High</span><span id="statHigh" class="font-bold text-bull">₹3,217.90</span></div>
+            <div class="flex justify-between text-xs"><span class="text-text-muted">52W Low</span><span id="statLow" class="font-bold text-bear">₹2,180.25</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD VIEW -->
+    <div id="view-dashboard" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+      <h1 class="text-3xl font-black">Market Dashboard</h1>
+      <div class="glass-card p-6">
+        <h3 class="font-bold text-lg mb-4">Sector Heatmap</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div class="p-4 rounded-xl bg-bull/15 border border-bull/30"><div class="font-bold">Automobile</div><div class="text-bull font-bold text-sm">+1.85%</div></div>
+          <div class="p-4 rounded-xl bg-bull/15 border border-bull/30"><div class="font-bold">Metals</div><div class="text-bull font-bold text-sm">+2.14%</div></div>
+          <div class="p-4 rounded-xl bg-bull/15 border border-bull/30"><div class="font-bold">Realty</div><div class="text-bull font-bold text-sm">+1.68%</div></div>
+          <div class="p-4 rounded-xl bg-bear/15 border border-bear/30"><div class="font-bold">IT Services</div><div class="text-bear font-bold text-sm">-0.68%</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCANNERS VIEW -->
+    <div id="view-scanners" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+      <h1 class="text-3xl font-black flex items-center gap-2"><i data-lucide="zap" class="w-8 h-8 text-warn"></i> AI Stock Scanners</h1>
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <button onclick="filterScanner('high-volume-breakout')" class="p-4 rounded-xl glass-card text-left hover:border-brand-500"><div class="text-xl mb-1">🔥</div><div class="font-bold text-sm">High Volume Breakout</div></button>
+        <button onclick="filterScanner('golden-cross')" class="p-4 rounded-xl glass-card text-left hover:border-brand-500"><div class="text-xl mb-1">✨</div><div class="font-bold text-sm">Golden Cross (50/200)</div></button>
+        <button onclick="filterScanner('supertrend-buy')" class="p-4 rounded-xl glass-card text-left hover:border-brand-500"><div class="text-xl mb-1">🚀</div><div class="font-bold text-sm">Supertrend Buy</div></button>
+      </div>
+    </div>
+
+    <!-- WATCHLIST VIEW -->
+    <div id="view-watchlist" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+      <div class="flex justify-between items-center">
+        <h1 class="text-3xl font-black">Watchlist</h1>
+        <button onclick="openModal('addWatchlistModal')" class="btn-primary px-4 py-2 text-sm flex items-center gap-1"><i data-lucide="plus" class="w-4 h-4"></i> Add Stock</button>
+      </div>
+      <div class="glass-card p-6 overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="text-left border-b border-white/10 text-xs text-text-muted uppercase">
+              <th class="pb-3">Symbol</th><th class="pb-3">Price</th><th class="pb-3">Change</th><th class="pb-3">Target</th><th class="pb-3">Stop Loss</th><th class="pb-3 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="watchlistTableBody" class="divide-y divide-white/5"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PORTFOLIO VIEW -->
+    <div id="view-portfolio" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+      <div class="flex justify-between items-center">
+        <h1 class="text-3xl font-black">AI Portfolio Health</h1>
+        <button onclick="openModal('addPortfolioModal')" class="btn-primary px-4 py-2 text-sm flex items-center gap-1"><i data-lucide="plus" class="w-4 h-4"></i> Add Position</button>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="glass-card p-6"><div class="text-xs text-text-muted">Total Portfolio Value</div><div id="portVal" class="text-3xl font-black mt-1">₹3,84,210</div></div>
+        <div class="glass-card p-6 border-brand-500/30"><div class="text-xs text-brand-400 font-semibold uppercase">AI Health Score</div><div class="text-3xl font-black mt-1">82 / 100</div></div>
+        <div class="glass-card p-6"><div class="text-xs text-text-muted">AI Diagnosis</div><div class="text-xs text-text-secondary mt-1">Strong performance across Energy &amp; Auto sectors.</div></div>
+      </div>
+    </div>
+
+    <!-- PRICING VIEW -->
+    <div id="view-pricing" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+      <h1 class="text-3xl font-black text-center">Transparent Pricing</h1>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="glass-card p-8 space-y-4"><h3 class="text-xl font-bold">Free Retail</h3><div class="text-3xl font-black">₹0</div><button class="w-full btn-ghost border border-white/10 py-2">Current Plan</button></div>
+        <div class="glass-card p-8 space-y-4 border-brand-500 shadow-xl"><h3 class="text-xl font-bold">Pro Trader</h3><div class="text-3xl font-black">₹999<span class="text-xs text-text-muted">/mo</span></div><button class="w-full btn-primary py-2">Upgrade Now</button></div>
+        <div class="glass-card p-8 space-y-4"><h3 class="text-xl font-bold">Institutional</h3><div class="text-3xl font-black">₹2,999<span class="text-xs text-text-muted">/mo</span></div><button class="w-full btn-ghost border border-white/10 py-2">Contact Sales</button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- SCREENSHOT MODAL -->
+  <div id="screenshotModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="glass-card max-w-md w-full p-6 space-y-4 relative">
+      <button onclick="closeModal('screenshotModal')" class="absolute top-4 right-4 text-text-muted"><i data-lucide="x" class="w-5 h-5"></i></button>
+      <h3 class="font-bold text-lg">Upload Chart Screenshot</h3>
+      <input type="file" accept="image/*" class="w-full p-3 rounded-xl bg-white/5 border border-white/10 text-xs">
+      <button onclick="alert('Screenshot analyzed! Ascending Triangle pattern detected.')" class="w-full btn-primary py-2 text-sm">Analyze Chart with Vision AI</button>
+    </div>
+  </div>
+
+  <!-- SCRIPT LOGIC -->
+  <script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+
+    // Mock Stocks Database
+    const STOCKS = {
+      RELIANCE: { name: 'Reliance Industries Ltd', price: 2987.45, change: 1.99, sector: 'Energy', pe: 28.4, pb: 2.1, cap: '₹20.28L Cr', high: '₹3,217.90', low: '₹2,180.25', drivers: ['Q1 Earnings beat by 12%', 'FII Bulk buying', 'Technical breakout above ₹2,950'] },
+      TATAMOTORS: { name: 'Tata Motors Ltd', price: 987.65, change: 2.53, sector: 'Automobile', pe: 12.8, pb: 2.9, cap: '₹3.62L Cr', high: '₹1,063.00', low: '₹620.00', drivers: ['JLR margins expanded', 'Ev sales growth +24%', 'Supertrend buy signal'] },
+      SBIN: { name: 'State Bank of India', price: 812.30, change: -1.51, sector: 'Banking', pe: 10.2, pb: 1.6, cap: '₹7.25L Cr', high: '₹912.10', low: '₹600.65', drivers: ['NIM compression concerns', 'Profit booking post rally', 'Support near ₹800'] },
+      INFY: { name: 'Infosys Ltd', price: 1654.80, change: 1.98, sector: 'IT Services', pe: 24.6, pb: 7.1, cap: '₹6.89L Cr', high: '₹1,987.00', low: '₹1,351.50', drivers: ['Large deal wins +$2.1B', 'Golden Cross confirmed', 'US tech rally tailwinds'] },
+      HDFCBANK: { name: 'HDFC Bank Ltd', price: 1723.55, change: 1.10, sector: 'Banking', pe: 18.9, pb: 2.4, cap: '₹13.10L Cr', high: '₹1,880.00', low: '₹1,363.45', drivers: ['Deposit growth accelerating', 'Institutional buying', 'EMA 50 support holding'] },
+      MARUTI: { name: 'Maruti Suzuki India Ltd', price: 12845.00, change: 2.76, sector: 'Automobile', pe: 29.8, pb: 5.2, cap: '₹4.01L Cr', high: '₹13,680.00', low: '₹9,315.00', drivers: ['Record monthly sales', 'SUV segment share 22%', 'Volume surge 2.8x'] }
+    };
+
+    let currentStock = 'RELIANCE';
+
+    function showView(viewId) {
+      document.querySelectorAll('main > div').forEach(el => el.classList.add('hidden'));
+      document.getElementById(`view-${viewId}`).classList.remove('hidden');
+      window.scrollTo(0,0);
+    }
+
+    function openStock(symbol) {
+      const s = STOCKS[symbol] || STOCKS['RELIANCE'];
+      currentStock = symbol;
+      document.getElementById('stockSymbol').innerText = symbol;
+      document.getElementById('stockName').innerText = s.name;
+      document.getElementById('stockPrice').innerText = `₹${s.price.toLocaleString('en-IN')}`;
+      document.getElementById('stockSector').innerText = s.sector;
+      document.getElementById('statPE').innerText = s.pe;
+      document.getElementById('statPB').innerText = s.pb;
+      document.getElementById('statCap').innerText = s.cap;
+      document.getElementById('statHigh').innerText = s.high;
+      document.getElementById('statLow').innerText = s.low;
+
+      const driversHtml = s.drivers.map(d => `<span class="px-2.5 py-1 rounded-lg bg-white/5 text-xs text-brand-400 font-medium">${d}</span>`).join('');
+      document.getElementById('aiDrivers').innerHTML = driversHtml;
+
+      renderChart('3M');
+      showView('stock');
+    }
+
+    function renderChart(tf) {
+      const canvas = document.getElementById('chartCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+
+      ctx.beginPath();
+      ctx.strokeStyle = '#00d97e';
+      ctx.lineWidth = 2;
+      let y = 180;
+      for(let x=0; x<canvas.width; x+=20) {
+        y += (Math.random() - 0.45) * 15;
+        if(x===0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+
+    function handleSearchInput(val) {
+      const dd = document.getElementById('searchDropdown');
+      if(!val.trim()) { dd.classList.add('hidden'); return; }
+      const q = val.toLowerCase();
+      const matches = Object.keys(STOCKS).filter(s => s.toLowerCase().includes(q) || STOCKS[s].name.toLowerCase().includes(q));
+      dd.innerHTML = matches.map(m => `
+        <div onclick="openStock('${m}'); document.getElementById('searchDropdown').classList.add('hidden')" class="p-2.5 hover:bg-white/10 rounded-xl cursor-pointer flex justify-between items-center">
+          <div><div class="font-bold text-sm">${m}</div><div class="text-xs text-text-muted">${STOCKS[m].name}</div></div>
+          <span class="text-xs text-bull font-bold">₹${STOCKS[m].price}</span>
+        </div>
+      `).join('');
+      dd.classList.remove('hidden');
+    }
+
+    function sendChatMessage(msgText) {
+      const input = document.getElementById('chatInput');
+      const text = msgText || input.value.trim();
+      if(!text) return;
+      if(!msgText) input.value = '';
+
+      const container = document.getElementById('chatMessages');
+      container.innerHTML += `<div class="p-2.5 rounded-xl bg-brand-500/20 text-text-primary text-right font-medium">${text}</div>`;
+
+      setTimeout(() => {
+        let reply = `Based on live data for ${currentStock}, technical indicators show solid momentum above key moving averages. Support is holding at EMA 50.\n\n⚠️ Not financial advice.`;
+        container.innerHTML += `<div class="p-2.5 rounded-xl bg-white/5 text-text-secondary leading-relaxed">${reply}</div>`;
+        container.scrollTop = container.scrollHeight;
+      }, 500);
+    }
+
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+    function toggleMobileMenu() { document.getElementById('mobileMenu').classList.toggle('hidden'); }
+  </script>
+</body>
+</html>
