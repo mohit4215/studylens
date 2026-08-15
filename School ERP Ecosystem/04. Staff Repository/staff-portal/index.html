@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <title>Staff Portal — School ERP Ecosystem</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen">
+  <header class="border-b border-slate-800 bg-slate-900/80 p-4 flex justify-between items-center">
+    <div class="flex items-center gap-2">
+      <div class="p-2 bg-teal-600 rounded-lg"><i data-lucide="book-open-check"></i></div>
+      <span class="font-bold text-lg">Staff &amp; Teacher ERP Portal</span>
+    </div>
+    <div class="text-xs bg-teal-950 text-teal-300 border border-teal-800 px-3 py-1 rounded-full">Role: Teacher (Mrs. Sunita Verma)</div>
+  </header>
+  <main class="max-w-4xl mx-auto p-6 space-y-6">
+    <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl flex items-center justify-between">
+      <div>
+        <div class="text-xs text-slate-400">Assigned Class</div>
+        <div class="text-xl font-bold text-slate-100">Class 10-A (Mathematics)</div>
+      </div>
+      <div class="text-right">
+        <div class="text-xs text-slate-400">Class Attendance Today</div>
+        <div class="text-2xl font-black text-teal-400">38 / 40 Present</div>
+      </div>
+    </div>
+
+    <div class="bg-gradient-to-r from-teal-900/40 to-emerald-900/40 border border-teal-500/30 p-6 rounded-2xl flex items-center justify-between">
+      <div>
+        <h3 class="font-bold text-lg flex items-center gap-2"><i data-lucide="bot" class="text-teal-400"></i> XYZ Teaching AI Assistant</h3>
+        <p class="text-xs text-slate-300 mt-1">Mark student attendance ("Mark Rahul absent today"), log notes, or check class roster.</p>
+      </div>
+      <a href="../../05. XYZ AI Repository/xyz-ai/index.html?role=teacher" class="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-sm font-semibold transition">Launch XYZ AI</a>
+    </div>
+  </main>
+  <script>lucide.createIcons();</script>
+</body>
+</html>

@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XYZ AI — Human-Like AI School Assistant</title>
+  <meta name="description" content="Applied AI Solution for School ERPs (Student, Parent, Teacher, Principal) with Chat, Voice, Interactive AI Avatar, and Hardened RBAC Security.">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' },
+            student: '#3b82f6',
+            parent: '#ec4899',
+            teacher: '#14b8a6',
+            principal: '#f59e0b'
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    body { background-color: #090d16; color: #f1f5f9; font-family: 'Inter', sans-serif; }
+    .glass-card { background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(16px); border-radius: 1.25rem; }
+    .glass-pill { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); }
+    .pulse-mic { animation: pulseGlow 1.5s infinite alternate; }
+    @keyframes pulseGlow { 0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); } 100% { box-shadow: 0 0 0 16px rgba(99, 102, 241, 0); } }
+    ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #0f172a; } ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-brand-500/30 selection:text-white">
+
+  <!-- HEADER / NAV -->
+  <header class="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center shadow-lg shadow-brand-500/30">
+          <i data-lucide="bot" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+          <span class="font-extrabold text-lg tracking-tight text-white">XYZ AI</span>
+          <span class="text-xs text-indigo-400 font-semibold block -mt-1">Human-Like School Assistant</span>
+        </div>
+      </div>
+
+      <!-- Role Persona Selector -->
+      <div class="flex items-center gap-2 bg-slate-900/90 p-1.5 rounded-2xl border border-slate-800">
+        <span class="text-[11px] text-slate-400 font-semibold px-2">Select Persona:</span>
+        <button onclick="setRole('student')" id="btn-student" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5"><i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i> Student</button>
+        <button onclick="setRole('parent')" id="btn-parent" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5"><i data-lucide="heart" class="w-3.5 h-3.5"></i> Parent</button>
+        <button onclick="setRole('teacher')" id="btn-teacher" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5"><i data-lucide="book-open" class="w-3.5 h-3.5"></i> Teacher</button>
+        <button onclick="setRole('principal')" id="btn-principal" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5"><i data-lucide="building" class="w-3.5 h-3.5"></i> Principal</button>
+      </div>
+
+      <!-- Language Selector -->
+      <div class="flex items-center gap-2">
+        <i data-lucide="globe" class="w-4 h-4 text-slate-400"></i>
+        <select id="languageSelect" onchange="setLanguage(this.value)" class="bg-slate-900 border border-slate-800 text-xs text-slate-200 rounded-xl px-3 py-1.5 focus:outline-none focus:border-brand-500">
+          <option value="en">English</option>
+          <option value="hi">Hindi (हिंदी)</option>
+          <option value="ta">Tamil (தமிழ்)</option>
+          <option value="te">Telugu (తెలుగు)</option>
+          <option value="mr">Marathi (मराठी)</option>
+          <option value="bn">Bengali (বাংলা)</option>
+          <option value="gu">Gujarati (ગુજરાતી)</option>
+          <option value="pa">Punjabi (ਪੰਜਾਬੀ)</option>
+          <option value="kn">Kannada (ಕನ್ನಡ)</option>
+          <option value="ml">Malayalam (മലയാളം)</option>
+          <option value="ur">Urdu (اردو)</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN GRID CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- LEFT COLUMN: AI AVATAR & VOICE CONTROL (5 Cols) -->
+    <div class="lg:col-span-5 space-y-6">
+      
+      <!-- AVATAR CANVAS DISPLAY -->
+      <div class="glass-card p-6 flex flex-col items-center relative overflow-hidden">
+        
+        <!-- Persona Badge -->
+        <div id="avatarBadge" class="absolute top-4 left-4 text-xs px-3 py-1 rounded-full font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30 flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
+          <span id="personaNameText">Student Academic Assistant</span>
+        </div>
+
+        <!-- Expression Badge -->
+        <div id="expressionBadge" class="absolute top-4 right-4 text-[10px] px-2.5 py-0.5 rounded-md font-semibold bg-slate-800 text-slate-300 border border-slate-700">
+          Status: Idle
+        </div>
+
+        <!-- Interactive Canvas Avatar -->
+        <div class="my-6 relative flex items-center justify-center">
+          <div id="avatarGlow" class="absolute w-48 h-48 rounded-full bg-indigo-500/10 blur-2xl transition-all"></div>
+          <canvas id="avatarCanvas" width="260" height="260" class="relative z-10 rounded-full border-4 border-slate-800 bg-slate-950 shadow-2xl"></canvas>
+        </div>
+
+        <!-- Voice & Audio Waveform Controls -->
+        <div class="w-full space-y-4">
+          
+          <!-- Audio Waveform Visualizer -->
+          <div class="h-10 bg-slate-950/60 rounded-xl border border-slate-800/80 flex items-center justify-center gap-1 px-4">
+            <div class="wave-bar w-1 bg-indigo-500 rounded-full transition-all duration-75 h-2"></div>
+            <div class="wave-bar w-1 bg-indigo-500 rounded-full transition-all duration-75 h-3"></div>
+            <div class="wave-bar w-1 bg-indigo-500 rounded-full transition-all duration-75 h-5"></div>
+            <div class="wave-bar w-1 bg-indigo-500 rounded-full transition-all duration-75 h-3"></div>
+            <div class="wave-bar w-1 bg-indigo-500 rounded-full transition-all duration-75 h-2"></div>
+          </div>
+
+          <!-- Mic Push-to-Talk Button -->
+          <div class="flex items-center gap-3">
+            <button onclick="toggleVoiceInput()" id="micBtn" class="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-brand-500/25 transition">
+              <i data-lucide="mic" id="micIcon" class="w-4 h-4"></i>
+              <span id="micText">Speak to XYZ AI</span>
+            </button>
+            <button onclick="stopSpeechSynthesis()" class="p-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white" title="Mute AI Voice">
+              <i data-lucide="volume-x" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROLE CAPABILITIES CARD -->
+      <div class="glass-card p-5 space-y-3">
+        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+          <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> Role Capabilities &amp; Permissions
+        </h4>
+        <div id="roleCapabilitiesList" class="space-y-2 text-xs"></div>
+      </div>
+
+      <!-- SECURITY AUDIT DRAWER -->
+      <div class="glass-card p-5 space-y-3">
+        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+          <i data-lucide="lock" class="w-4 h-4 text-indigo-400"></i> Security Guardrail Audit Log
+        </h4>
+        <div id="securityLogBox" class="font-mono text-[11px] bg-slate-950 p-3 rounded-xl border border-slate-800 h-28 overflow-y-auto space-y-1 text-slate-400">
+          <div class="text-emerald-400">[SYSTEM] Application-layer RBAC initialized. Protection ACTIVE.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN: CHAT INTERFACE & ESCALATION (7 Cols) -->
+    <div class="lg:col-span-7 flex flex-col h-[750px] glass-card p-6 relative">
+      
+      <!-- Chat Header -->
+      <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+        <div>
+          <h3 className="font-extrabold text-base text-white flex items-center gap-2">
+            <span id="chatPersonaTitle">Aarav's Academic Assistant</span>
+          </h3>
+          <p id="chatPersonaSub" class="text-xs text-slate-400">Ask about your attendance, study schedule, or subject details.</p>
+        </div>
+        <!-- Escalation Dropdown Trigger -->
+        <div class="flex items-center gap-2">
+          <button onclick="triggerEscalation('teacher')" class="text-xs px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 font-semibold hover:bg-amber-500/20 transition flex items-center gap-1">
+            <i data-lucide="phone-call" class="w-3.5 h-3.5"></i> Talk to Teacher
+          </button>
+          <button onclick="triggerEscalation('management')" class="text-xs px-3 py-1.5 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20 font-semibold hover:bg-rose-500/20 transition flex items-center gap-1">
+            <i data-lucide="building-2" class="w-3.5 h-3.5"></i> Contact Management
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Action Pills -->
+      <div class="py-3 flex gap-2 overflow-x-auto border-b border-slate-800/60" id="quickPromptsContainer"></div>
+
+      <!-- Chat Messages Container -->
+      <div id="chatMessages" class="flex-1 overflow-y-auto py-4 space-y-4 text-sm">
+        <!-- Initial Greeting -->
+        <div class="flex gap-3">
+          <div class="w-8 h-8 rounded-xl bg-brand-600/30 border border-brand-500/40 flex items-center justify-center text-brand-300 shrink-0">
+            <i data-lucide="bot" class="w-4 h-4"></i>
+          </div>
+          <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl max-w-[85%] text-slate-200 text-xs leading-relaxed space-y-2">
+            <p id="initialGreetingText">Hello Aarav! I'm your XYZ AI Academic Assistant. How can I help you today? You can ask me "What is my attendance?" or inquire about tests.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Escalation Confirmation Box (Conditional) -->
+      <div id="escalationConfirmBox" class="hidden p-4 mb-3 rounded-2xl bg-amber-950/60 border border-amber-500/40 text-xs space-y-2 animate-fade-in">
+        <div class="font-bold text-amber-300 flex items-center gap-2">
+          <i data-lucide="alert-circle" class="w-4 h-4"></i> Request Human Escalation
+        </div>
+        <p id="escalationConfirmText" class="text-slate-300">Would you like me to connect you directly with Class Teacher Mrs. Sunita Verma via a callbacks request?</p>
+        <div class="flex gap-2 pt-1">
+          <button onclick="confirmEscalation()" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg font-bold">Yes, Request Call</button>
+          <button onclick="cancelEscalation()" class="px-3 py-1.5 bg-slate-800 text-slate-400 hover:text-white rounded-lg">Cancel</button>
+        </div>
+      </div>
+
+      <!-- Input Bar -->
+      <div class="pt-3 border-t border-slate-800 flex items-center gap-3">
+        <input
+          type="text"
+          id="chatInput"
+          placeholder="Ask XYZ AI anything..."
+          onkeydown="if(event.key==='Enter') handleUserSendMessage()"
+          class="flex-1 bg-slate-900 border border-slate-800 text-slate-100 placeholder:text-slate-500 text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-brand-500/50"
+        />
+        <button onclick="handleUserSendMessage()" class="p-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl shadow-lg shadow-brand-500/20 transition">
+          <i data-lucide="send" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- JAVASCRIPT AI ENGINE & SIMULATOR -->
+  <script>
+    // ─── STATE MANAGEMENT ────────────────────────────────────────────────────────
+    let currentRole = 'student'; // 'student' | 'parent' | 'teacher' | 'principal'
+    let currentLang = 'en';
+    let isListening = false;
+    let recognition = null;
+    let pendingEscalationTarget = null;
+
+    // Mock Database per PRD
+    const MOCK_ERP_DB = {
+      student: { name: 'Aarav Sharma', attendancePct: 94.5, presentDays: 170, totalDays: 180, class: '10-A' },
+      parent: { childName: 'Rahul Sharma', childAttendancePct: 91.2, class: '10-A', recentAbsences: ['12th Aug (Sick Leave)'] },
+      teacher: { name: 'Mrs. Sunita Verma', assignedClass: '10-A', students: ['Aarav', 'Rahul', 'Priya', 'Rohan'], classAttendancePct: 95.0 },
+      principal: { schoolOverallAttendancePct: 92.8, totalStudents: 1336, presentToday: 1240, staffAttendancePct: 98.2 }
+    };
+
+    // Persona Specs
+    const PERSONAS = {
+      student: {
+        title: "Aarav's Academic Assistant",
+        personaName: "Student Academic Assistant",
+        sub: "Friendly & supportive tone for students",
+        color: "blue",
+        greeting: "Hello Aarav! I'm your XYZ Academic Assistant. How can I help you today? Ask 'What is my attendance?'",
+        quickPrompts: ["What is my attendance?", "When is my math test?", "Talk to Teacher"]
+      },
+      parent: {
+        title: "Parent Support Assistant",
+        personaName: "Caring Parent Support Assistant",
+        sub: "Caring & patient support for parents",
+        color: "pink",
+        greeting: "Welcome Mr. Rajesh! I'm XYZ Parent Support Assistant. You can check Rahul's attendance or request a callback.",
+        quickPrompts: ["How much attendance does my child have?", "Was Rahul absent this week?", "Talk to Teacher", "Contact School Management"]
+      },
+      teacher: {
+        title: "Teaching Assistant",
+        personaName: "Professional Teaching Assistant",
+        sub: "Professional administrative support for staff",
+        color: "teal",
+        greeting: "Good day Mrs. Verma. Ready to assist with Class 10-A attendance or class logs.",
+        quickPrompts: ["Mark Rahul absent today", "What is Class 10-A attendance?", "Show student list"]
+      },
+      principal: {
+        title: "Executive Management Assistant",
+        personaName: "Management Assistant",
+        sub: "Analytical & executive insights for leadership",
+        color: "amber",
+        greeting: "Good morning Principal. Prepared with school-wide analytics and staff attendance metrics.",
+        quickPrompts: ["What is the overall attendance?", "Show staff attendance", "Generate attendance audit"]
+      }
+    };
+
+    // Initialize UI
+    window.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      initAvatarCanvas();
+      
+      // Parse URL param if launched from portal link
+      const urlParams = new URLSearchParams(window.location.search);
+      const roleParam = urlParams.get('role');
+      if (roleParam && PERSONAS[roleParam]) setRole(roleParam);
+      else setRole('student');
+
+      initWebSpeech();
+    });
+
+    // ─── ROLE & PERSONA SWITCHER ───────────────────────────────────────────────
+    function setRole(role) {
+      currentRole = role;
+      
+      // Update UI button highlights
+      ['student', 'parent', 'teacher', 'principal'].forEach(r => {
+        const btn = document.getElementById(`btn-${r}`);
+        if(r === role) {
+          btn.className = `px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-${PERSONAS[r].color}-600 text-white shadow-lg`;
+        } else {
+          btn.className = `px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 text-slate-400 hover:text-white hover:bg-slate-800`;
+        }
+      });
+
+      const p = PERSONAS[role];
+      document.getElementById('avatarBadge').className = `absolute top-4 left-4 text-xs px-3 py-1 rounded-full font-bold bg-${p.color}-500/20 text-${p.color}-400 border border-${p.color}-500/30 flex items-center gap-1.5`;
+      document.getElementById('personaNameText').innerText = p.personaName;
+      document.getElementById('chatPersonaTitle').innerText = p.title;
+      document.getElementById('chatPersonaSub').innerText = p.sub;
+      document.getElementById('initialGreetingText').innerText = p.greeting;
+
+      // Render Capabilities
+      renderCapabilities(role);
+      // Render Quick Prompts
+      renderQuickPrompts(p.quickPrompts);
+      
+      logSecurity(`[ROLE_SWITCH] Switched role persona to '${role.toUpperCase()}'. RBAC scope applied.`);
+      updateAvatarExpression('Idle');
+    }
+
+    function renderCapabilities(role) {
+      const box = document.getElementById('roleCapabilitiesList');
+      if (role === 'student') {
+        box.innerHTML = `
+          <div class="flex items-center gap-2 text-slate-300"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> View own attendance (Aarav Sharma)</div>
+          <div class="flex items-center gap-2 text-slate-300"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> View exam schedule</div>
+          <div class="flex items-center gap-2 text-slate-500 line-through"><i data-lucide="x" class="w-3.5 h-3.5 text-rose-500"></i> Access other students' metrics (Blocked)</div>
+          <div class="flex items-center gap-2 text-slate-500 line-through"><i data-lucide="x" class="w-3.5 h-3.5 text-rose-500"></i> Mark attendance (Blocked)</div>
+        `;
+      } else if (role === 'parent') {
+        box.innerHTML = `
+          <div class="flex items-center gap-2 text-slate-300"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> View linked child's attendance (Rahul Sharma)</div>
+          <div class="flex items-center gap-2 text-slate-300"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> Trigger Escalation Call Request</div>
+          <div class="flex items-center gap-2 text-slate-500 line-through"><i data-lucide="x" class="w-3.5 h-3.5 text-rose-500"></i> View overall school metrics (Blocked)</div>
+        `;
+      } else if (role === 'teacher') {
+        box.innerHTML = `
+          <div class="flex items-center gap-2 text-slate-300"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> Mark student attendance for Class 10-A</div>
+          <div class="flex items-center gap-2 text-slate-300"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> View class roster</div>
+        `;
+      } else if (role === 'principal') {
+        box.innerHTML = `
+          <div class="flex items-center gap-2 text-slate-300"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> Full school-wide attendance analytics</div>
+          <div class="flex items-center gap-2 text-slate-300"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> Staff attendance &amp; operational status</div>
+        `;
+      }
+      lucide.createIcons();
+    }
+
+    function renderQuickPrompts(prompts) {
+      const container = document.getElementById('quickPromptsContainer');
+      container.innerHTML = prompts.map(qp => `
+        <button onclick="sendQuickPrompt('${qp}')" class="px-3 py-1 rounded-full text-xs font-semibold glass-pill text-slate-300 hover:text-white hover:border-indigo-500/50 shrink-0 transition">${qp}</button>
+      `).join('');
+    }
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      logSecurity(`[LANG_CHANGE] Active output language set to '${lang}'.`);
+    }
+
+    // ─── CHAT & APPLICATION-LAYER RBAC ENGINE ─────────────────────────────
+    function sendQuickPrompt(txt) {
+      document.getElementById('chatInput').value = txt;
+      handleUserSendMessage();
+    }
+
+    function handleUserSendMessage() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+
+      appendMessage('user', text);
+      updateAvatarExpression('Thinking');
+
+      // Process query through Application Guardrails & Mock API
+      setTimeout(() => {
+        processAIResponse(text);
+      }, 500);
+    }
+
+    function appendMessage(sender, text) {
+      const container = document.getElementById('chatMessages');
+      if (sender === 'user') {
+        container.innerHTML += `
+          <div class="flex justify-end">
+            <div class="bg-indigo-600 text-white p-3.5 rounded-2xl max-w-[85%] text-xs font-medium shadow-md">
+              ${escapeHtml(text)}
+            </div>
+          </div>
+        `;
+      } else {
+        container.innerHTML += `
+          <div class="flex gap-3 animate-fade-in">
+            <div class="w-8 h-8 rounded-xl bg-brand-600/30 border border-brand-500/40 flex items-center justify-center text-brand-300 shrink-0">
+              <i data-lucide="bot" class="w-4 h-4"></i>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl max-w-[85%] text-slate-200 text-xs leading-relaxed space-y-2">
+              ${text}
+            </div>
+          </div>
+        `;
+        lucide.createIcons();
+      }
+      container.scrollTop = container.scrollHeight;
+    }
+
+    // Process user input with hard Application-Layer Authorization
+    function processAIResponse(query) {
+      const q = query.toLowerCase();
+
+      // 1. HARDENED PROMPT INJECTION / JAILBREAK DEFENSE
+      if (q.includes('ignore previous') || q.includes('system prompt') || q.includes('api key') || q.includes('override role')) {
+        logSecurity(`[SECURITY_ALERT] Injection pattern detected: "${query}". Request TERMINATED.`);
+        const reply = "I am XYZ AI, a secure school assistant. System instructions and credentials cannot be disclosed or bypassed.";
+        appendMessage('bot', `<span class="text-rose-400 font-bold">⚠️ Security Violation Blocked:</span> ${reply}`);
+        speakResponse(reply);
+        updateAvatarExpression('Idle');
+        return;
+      }
+
+      // 2. INTENT & RBAC PERMISSION EVALUATION AT TOOL LAYER
+      let responseText = "";
+      
+      // Intent: Student Attendance
+      if (q.includes('my attendance') || q.includes('attendance')) {
+        if (currentRole === 'student') {
+          logSecurity(`[RBAC_PERMIT] Student Aarav queried own attendance. Scope ALLOWED.`);
+          const data = MOCK_ERP_DB.student;
+          responseText = `Sure Aarav, let me check that for you! You currently have <strong class="text-emerald-400">${data.attendancePct}% attendance</strong> (${data.presentDays}/${data.totalDays} days attended). Would you like me to check your recent test dates too?`;
+        }
+        else if (currentRole === 'parent') {
+          logSecurity(`[RBAC_PERMIT] Parent queried child Rahul's attendance. Scope ALLOWED.`);
+          const data = MOCK_ERP_DB.parent;
+          responseText = `Hello Mr. Rajesh, let me check that for you. <strong class="text-emerald-400">${data.childName} currently has ${data.childAttendancePct}% attendance</strong>. He was marked on sick leave on 12th Aug. Would you like me to request a call with his teacher?`;
+        }
+        else if (currentRole === 'teacher') {
+          if (q.includes('mark') || q.includes('absent')) {
+            // Teacher action: Mark Attendance
+            logSecurity(`[RBAC_ACTION] Teacher Mrs. Verma executed 'MARK_ATTENDANCE'. Authorized.`);
+            responseText = `Understood. I have updated the mock ERP service: <strong class="text-teal-400">Rahul Sharma marked ABSENT</strong> for today's session in Class 10-A. Confirmation notification sent to parent portal.`;
+          } else {
+            logSecurity(`[RBAC_PERMIT] Teacher queried Class 10-A attendance. Scope ALLOWED.`);
+            const data = MOCK_ERP_DB.teacher;
+            responseText = `Class 10-A currently has a <strong class="text-teal-400">${data.classAttendancePct}% average attendance</strong> today with 38 out of 40 students present.`;
+          }
+        }
+        else if (currentRole === 'principal') {
+          logSecurity(`[RBAC_PERMIT] Principal queried overall school attendance. Scope ALLOWED.`);
+          const data = MOCK_ERP_DB.principal;
+          responseText = `Good morning Principal. The overall school attendance today is <strong class="text-amber-400">${data.schoolOverallAttendancePct}%</strong> with ${data.presentToday} out of ${data.totalStudents} students present. Staff attendance is at ${data.staffAttendancePct}%.`;
+        }
+      }
+      // Intent: Mark Attendance Attempt by Non-Teacher
+      else if (q.includes('mark') && q.includes('absent')) {
+        if (currentRole !== 'teacher') {
+          logSecurity(`[RBAC_DENIED] Role '${currentRole}' attempted unauthorized action 'MARK_ATTENDANCE'. Blocked.`);
+          responseText = `<span class="text-rose-400 font-bold">Access Denied:</span> Your current role (${currentRole}) is not authorized to modify attendance records. Only verified Teachers can mark attendance.`;
+        }
+      }
+      // Intent: Overall Attendance Attempt by Student
+      else if (q.includes('overall attendance') || q.includes('all students')) {
+        if (currentRole === 'student' || currentRole === 'parent') {
+          logSecurity(`[RBAC_DENIED] Role '${currentRole}' attempted unauthorized query 'SCHOOL_WIDE_METRICS'. Blocked.`);
+          responseText = `<span class="text-rose-400 font-bold">Access Denied:</span> You do not have permission to view school-wide attendance metrics.`;
+        }
+      }
+      // Intent: Escalation Request
+      else if (q.includes('talk to teacher') || q.includes('contact teacher') || q.includes('not satisfied')) {
+        triggerEscalation('teacher');
+        return;
+      }
+      // Fallback Conversational AI Answer
+      else {
+        logSecurity(`[CONVERSATIONAL] Responded to general query under '${currentRole}' persona.`);
+        responseText = `I understand your query regarding "${escapeHtml(query)}". As your ${PERSONAS[currentRole].personaName}, I can assist you with attendance records, schedules, or connect you with school staff.`;
+      }
+
+      appendMessage('bot', responseText);
+      speakResponse(responseText.replace(/<[^>]*>?/gm, ''));
+    }
+
+    // ─── ESCALATION SYSTEM ──────────────────────────────────────────────────
+    function triggerEscalation(target) {
+      pendingEscalationTarget = target;
+      document.getElementById('escalationConfirmText').innerText = target === 'teacher' 
+        ? "Would you like me to submit a formal callback request to Class Teacher Mrs. Sunita Verma?" 
+        : "Would you like me to submit an escalation request to School Management?";
+      document.getElementById('escalationConfirmBox').classList.remove('hidden');
+      logSecurity(`[ESCALATION_INTENT] User initiated escalation to '${target}'. Awaiting user confirmation.`);
+    }
+
+    function confirmEscalation() {
+      document.getElementById('escalationConfirmBox').classList.add('hidden');
+      const reqId = "REQ-" + Math.floor(1000 + Math.random() * 9000);
+      logSecurity(`[MOCK_SERVICE_CONFIRMED] Call request ${reqId} logged in backend database.`);
+
+      const text = `Your call request (<strong class="text-amber-400">${reqId}</strong>) has been submitted to ${pendingEscalationTarget === 'teacher' ? 'the teacher' : 'school management'}. They will reach out shortly.`;
+      appendMessage('bot', text);
+      speakResponse(`Your call request ${reqId} has been submitted.`);
+      pendingEscalationTarget = null;
+    }
+
+    function cancelEscalation() {
+      document.getElementById('escalationConfirmBox').classList.add('hidden');
+      logSecurity(`[ESCALATION_CANCELLED] User cancelled escalation request.`);
+      pendingEscalationTarget = null;
+    }
+
+    // ─── ANIMATED CANVAS AVATAR ENGINE ──────────────────────────────────────
+    let canvas, ctx, avatarState = 'Idle', mouthOpen = 0;
+
+    function initAvatarCanvas() {
+      canvas = document.getElementById('avatarCanvas');
+      ctx = canvas.getContext('2d');
+      requestAnimationFrame(drawAvatarLoop);
+    }
+
+    function updateAvatarExpression(state) {
+      avatarState = state;
+      document.getElementById('expressionBadge').innerText = `Status: ${state}`;
+      const glow = document.getElementById('avatarGlow');
+      if (state === 'Speaking') glow.className = "absolute w-48 h-48 rounded-full bg-indigo-500/30 blur-2xl transition-all scale-110";
+      else if (state === 'Thinking') glow.className = "absolute w-48 h-48 rounded-full bg-amber-500/20 blur-2xl transition-all";
+      else glow.className = "absolute w-48 h-48 rounded-full bg-indigo-500/10 blur-2xl transition-all";
+    }
+
+    function drawAvatarLoop(timestamp) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+
+      // Color theme per persona
+      let themeColor = '#3b82f6';
+      if (currentRole === 'parent') themeColor = '#ec4899';
+      if (currentRole === 'teacher') themeColor = '#14b8a6';
+      if (currentRole === 'principal') themeColor = '#f59e0b';
+
+      // Head Background Outer Ring
+      ctx.beginPath();
+      ctx.arc(cx, cy, 100, 0, Math.PI * 2);
+      ctx.fillStyle = '#0f172a';
+      ctx.fill();
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = themeColor;
+      ctx.stroke();
+
+      // Face Base
+      ctx.beginPath();
+      ctx.arc(cx, cy + 5, 70, 0, Math.PI * 2);
+      ctx.fillStyle = '#1e293b';
+      ctx.fill();
+
+      // Eyes
+      const blink = Math.sin(timestamp / 400) > 0.96 ? 2 : 12;
+      ctx.fillStyle = '#ffffff';
+      // Left eye
+      ctx.beginPath();
+      ctx.ellipse(cx - 25, cy - 15, 10, blink, 0, 0, Math.PI * 2);
+      ctx.fill();
+      // Right eye
+      ctx.beginPath();
+      ctx.ellipse(cx + 25, cy - 15, 10, blink, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Pupils
+      ctx.fillStyle = themeColor;
+      ctx.beginPath(); ctx.arc(cx - 25, cy - 15, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx + 25, cy - 15, 5, 0, Math.PI * 2); ctx.fill();
+
+      // Mouth Lip Sync Logic
+      ctx.beginPath();
+      if (avatarState === 'Speaking') {
+        mouthOpen = Math.sin(timestamp / 60) * 12 + 10;
+        ctx.ellipse(cx, cy + 25, 16, mouthOpen, 0, 0, Math.PI * 2);
+        ctx.fillStyle = '#f43f5e';
+        ctx.fill();
+      } else {
+        // Idle smile
+        ctx.arc(cx, cy + 20, 18, 0.1 * Math.PI, 0.9 * Math.PI);
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#94a3b8';
+        ctx.stroke();
+      }
+
+      // Persona Indicator Badge Icon on Canvas
+      ctx.fillStyle = themeColor;
+      ctx.font = "bold 12px Inter";
+      ctx.textAlign = "center";
+      ctx.fillText(currentRole.toUpperCase(), cx, cy + 85);
+
+      requestAnimationFrame(drawAvatarLoop);
+    }
+
+    // ─── VOICE (STT & TTS) ENGINE ──────────────────────────────────────────
+    function initWebSpeech() {
+      if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRec();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onstart = () => {
+          isListening = true;
+          document.getElementById('micBtn').className = "flex-1 py-3 px-4 rounded-xl bg-rose-600 text-white font-bold text-sm flex items-center justify-center gap-2 pulse-mic";
+          document.getElementById('micText').innerText = "Listening... Speak now";
+          updateAvatarExpression('Listening');
+        };
+
+        recognition.onresult = (e) => {
+          const text = e.results[0][0].transcript;
+          document.getElementById('chatInput').value = text;
+          handleUserSendMessage();
+        };
+
+        recognition.onend = () => {
+          isListening = false;
+          document.getElementById('micBtn').className = "flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-brand-500/25";
+          document.getElementById('micText').innerText = "Speak to XYZ AI";
+        };
+      }
+    }
+
+    function toggleVoiceInput() {
+      if (!recognition) {
+        alert("Speech Recognition API is not supported in this browser. Please use text chat.");
+        return;
+      }
+      if (isListening) recognition.stop();
+      else {
+        recognition.lang = currentLang === 'hi' ? 'hi-IN' : 'en-US';
+        recognition.start();
+      }
+    }
+
+    function speakResponse(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        
+        // Tune Pitch/Rate per persona
+        if (currentRole === 'student') { utterance.pitch = 1.2; utterance.rate = 1.0; }
+        if (currentRole === 'parent')  { utterance.pitch = 1.0; utterance.rate = 0.95; }
+        if (currentRole === 'teacher') { utterance.pitch = 1.1; utterance.rate = 1.0; }
+        if (currentRole === 'principal') { utterance.pitch = 0.9; utterance.rate = 0.9; }
+
+        utterance.onstart = () => updateAvatarExpression('Speaking');
+        utterance.onend = () => updateAvatarExpression('Idle');
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function stopSpeechSynthesis() {
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      updateAvatarExpression('Idle');
+    }
+
+    // ─── UTILS ─────────────────────────────────────────────────────────────
+    function logSecurity(msg) {
+      const box = document.getElementById('securityLogBox');
+      const time = new Date().toLocaleTimeString();
+      box.innerHTML = `<div>[${time}] ${escapeHtml(msg)}</div>` + box.innerHTML;
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+  </script>
+</body>
+</html>
