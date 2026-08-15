@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>StudyLens — Human-Like AI School Assistant (XYZ AI Ecosystem)</title>
-  <meta name="description" content="Applied AI Solution for modern School ERPs with Chat, Voice, Interactive Canvas AI Avatar, Multi-Language support, and Application-Layer RBAC Security.">
+  <meta name="description" content="State-of-the-art Applied AI Solution for modern School ERPs with Chat, Voice, Eye-Tracking AI Avatar, Multi-Language, Live Call Simulation & Application-Layer RBAC Security.">
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -19,7 +19,7 @@
             parent: '#ec4899',
             teacher: '#14b8a6',
             principal: '#f59e0b',
-            darkBg: '#090d16',
+            darkBg: '#080c14',
             darkCard: '#0f172a'
           }
         }
@@ -30,28 +30,34 @@
   <!-- Google Fonts & Lucide Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
-    body { background-color: #090d16; color: #f1f5f9; font-family: 'Plus Jakarta Sans', sans-serif; }
-    .glass-card { background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(16px); border-radius: 1.25rem; }
+    body { background-color: #080c14; color: #f1f5f9; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .glass-card { background: rgba(15, 23, 42, 0.72); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); border-radius: 1.25rem; }
     .glass-card-hover { transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
-    .glass-card-hover:hover { border-color: rgba(255, 255, 255, 0.18); transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4); }
-    .pulse-glow { animation: pulseGlow 1.8s infinite alternate; }
-    @keyframes pulseGlow { 0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); } 100% { box-shadow: 0 0 0 18px rgba(99, 102, 241, 0); } }
-    .wave-anim { animation: wave 1.2s infinite ease-in-out alternate; }
-    @keyframes wave { 0% { height: 6px; } 100% { height: 26px; } }
+    .glass-card-hover:hover { border-color: rgba(255, 255, 255, 0.18); transform: translateY(-2px); box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5); }
+    .pulse-glow { animation: pulseGlow 1.6s infinite alternate; }
+    @keyframes pulseGlow { 0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.5); } 100% { box-shadow: 0 0 0 20px rgba(99, 102, 241, 0); } }
+    .wave-anim { animation: wave 1.1s infinite ease-in-out alternate; }
+    @keyframes wave { 0% { height: 6px; opacity: 0.4; } 100% { height: 28px; opacity: 1; } }
     ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #0b1120; }
+    ::-webkit-scrollbar-track { background: #080c14; }
     ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 4px; }
     .mono-font { font-family: 'JetBrains Mono', monospace; }
+    
+    /* Persona Ambient Auras */
+    .aura-student { background: radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.15), transparent 60%), radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.12), transparent 50%); }
+    .aura-parent { background: radial-gradient(circle at 20% 20%, rgba(236, 72, 153, 0.15), transparent 60%), radial-gradient(circle at 80% 80%, rgba(244, 63, 94, 0.12), transparent 50%); }
+    .aura-teacher { background: radial-gradient(circle at 20% 20%, rgba(20, 184, 166, 0.15), transparent 60%), radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.12), transparent 50%); }
+    .aura-principal { background: radial-gradient(circle at 20% 20%, rgba(245, 158, 11, 0.15), transparent 60%), radial-gradient(circle at 80% 80%, rgba(217, 119, 6, 0.12), transparent 50%); }
   </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased selection:bg-brand-500/30 selection:text-white">
+<body id="mainBody" class="min-h-screen flex flex-col antialiased selection:bg-brand-500/30 selection:text-white aura-student transition-all duration-700">
 
-  <!-- TOP ECOSYSTEM BAR -->
-  <header class="border-b border-slate-800/80 bg-slate-950/90 backdrop-blur-xl sticky top-0 z-50">
+  <!-- TOP ECOSYSTEM NAVBAR -->
+  <header class="border-b border-slate-800/80 bg-slate-950/90 backdrop-blur-xl sticky top-0 z-40">
     <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
       
       <!-- Brand Logo -->
@@ -69,26 +75,32 @@
       </div>
 
       <!-- Main Navigation Tabs -->
-      <nav class="hidden md:flex items-center gap-1 bg-slate-900/90 p-1 rounded-2xl border border-slate-800">
-        <button onclick="switchView('ai-assistant')" id="nav-ai-assistant" class="nav-tab px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-brand-600 text-white shadow">
+      <nav class="hidden lg:flex items-center gap-1 bg-slate-900/90 p-1 rounded-2xl border border-slate-800">
+        <button onclick="switchView('ai-assistant')" id="nav-ai-assistant" class="nav-tab px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-brand-600 text-white shadow">
           <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> XYZ AI Assistant
         </button>
-        <button onclick="switchView('student')" id="nav-student" class="nav-tab px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1.5">
-          <i data-lucide="graduation-cap" class="w-3.5 h-3.5 text-blue-400"></i> Student Portal
+        <button onclick="switchView('student')" id="nav-student" class="nav-tab px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1.5">
+          <i data-lucide="graduation-cap" class="w-3.5 h-3.5 text-blue-400"></i> Student
         </button>
-        <button onclick="switchView('parent')" id="nav-parent" class="nav-tab px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1.5">
-          <i data-lucide="heart" class="w-3.5 h-3.5 text-pink-400"></i> Parent Portal
+        <button onclick="switchView('parent')" id="nav-parent" class="nav-tab px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1.5">
+          <i data-lucide="heart" class="w-3.5 h-3.5 text-pink-400"></i> Parent
         </button>
-        <button onclick="switchView('teacher')" id="nav-teacher" class="nav-tab px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1.5">
-          <i data-lucide="book-open" class="w-3.5 h-3.5 text-teal-400"></i> Staff / Teacher
+        <button onclick="switchView('teacher')" id="nav-teacher" class="nav-tab px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1.5">
+          <i data-lucide="book-open" class="w-3.5 h-3.5 text-teal-400"></i> Staff/Teacher
         </button>
-        <button onclick="switchView('management')" id="nav-management" class="nav-tab px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1.5">
+        <button onclick="switchView('management')" id="nav-management" class="nav-tab px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1.5">
           <i data-lucide="building" class="w-3.5 h-3.5 text-amber-400"></i> Management
         </button>
       </nav>
 
-      <!-- Global Controls: Language Selector -->
+      <!-- Global Controls: Command Palette Trigger & Language -->
       <div class="flex items-center gap-2">
+        <button onclick="openCommandPalette()" class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white text-xs transition" title="Open Quick Command Palette">
+          <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400"></i>
+          <span>Commands</span>
+          <kbd class="mono-font text-[10px] bg-slate-800 px-1.5 py-0.5 rounded text-slate-400">⌘K</kbd>
+        </button>
+
         <div class="flex items-center gap-1.5 bg-slate-900 border border-slate-800 rounded-xl px-2.5 py-1.5">
           <i data-lucide="globe" class="w-3.5 h-3.5 text-indigo-400"></i>
           <select id="globalLanguageSelect" onchange="setLanguage(this.value)" class="bg-transparent text-xs text-slate-200 font-medium focus:outline-none cursor-pointer">
@@ -109,10 +121,10 @@
     </div>
   </header>
 
-  <!-- VIEW 1: XYZ AI HUMAN-LIKE ASSISTANT (DEFAULT / PRIMARY) -->
+  <!-- VIEW 1: XYZ AI HUMAN-LIKE ASSISTANT (CORE MULTIMODAL HUB) -->
   <section id="view-ai-assistant" class="view-panel flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
     
-    <!-- LEFT COLUMN: AVATAR, VOICE & SECURITY DRAWER (5 Cols) -->
+    <!-- LEFT COLUMN: AVATAR, VOICE ENGINE & CONTROLS (5 Cols) -->
     <div class="lg:col-span-5 space-y-6">
       
       <!-- AVATAR & VOICE CARD -->
@@ -121,8 +133,8 @@
         <!-- Role Persona Selector Bar -->
         <div class="w-full mb-4">
           <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
-            <span>Select Active Persona:</span>
-            <span id="activeRoleTag" class="text-indigo-400">Student Mode</span>
+            <span>Active Persona:</span>
+            <span id="activeRoleTag" class="text-indigo-400 font-mono">STUDENT MODE</span>
           </div>
           <div class="grid grid-cols-4 gap-1.5 bg-slate-950 p-1.5 rounded-xl border border-slate-800 text-xs">
             <button onclick="setRole('student')" id="btn-student" class="role-btn py-1.5 rounded-lg font-bold transition flex flex-col items-center gap-1 bg-blue-600 text-white shadow">
@@ -151,20 +163,20 @@
             <span id="personaNameText">Academic Assistant</span>
           </div>
           <div id="expressionBadge" class="text-[11px] px-2.5 py-0.5 rounded-md font-semibold bg-slate-800 text-slate-300 border border-slate-700">
-            Status: Idle
+            Status: Idle (Eye Tracking ON)
           </div>
         </div>
 
-        <!-- Interactive AI Avatar Canvas -->
+        <!-- Interactive AI Avatar Canvas (Cursor & Pupil Tracking) -->
         <div class="my-4 relative flex items-center justify-center">
           <div id="avatarGlow" class="absolute w-44 h-44 rounded-full bg-indigo-500/15 blur-2xl transition-all"></div>
-          <canvas id="avatarCanvas" width="240" height="240" class="relative z-10 rounded-full border-4 border-slate-800 bg-slate-950 shadow-2xl cursor-pointer" title="Click Avatar to trigger conversation"></canvas>
+          <canvas id="avatarCanvas" width="240" height="240" class="relative z-10 rounded-full border-4 border-slate-800 bg-slate-950 shadow-2xl cursor-pointer" title="Hover mouse to see eye & pupil tracking"></canvas>
         </div>
 
-        <!-- Speech & Voice Synthesizer Controls -->
+        <!-- Speech, Waveform & Voice Controls -->
         <div class="w-full space-y-3">
           <!-- Audio Waveform Visualizer -->
-          <div class="h-9 bg-slate-950/80 rounded-xl border border-slate-800/80 flex items-center justify-center gap-1 px-4">
+          <div class="h-9 bg-slate-950/80 rounded-xl border border-slate-800/80 flex items-center justify-center gap-1 px-4" id="waveformBox">
             <div class="wave-bar w-1 bg-indigo-500 rounded-full transition-all duration-75 h-2"></div>
             <div class="wave-bar w-1 bg-indigo-500 rounded-full transition-all duration-75 h-3"></div>
             <div class="wave-bar w-1 bg-indigo-500 rounded-full transition-all duration-75 h-5"></div>
@@ -174,7 +186,7 @@
             <div class="wave-bar w-1 bg-indigo-500 rounded-full transition-all duration-75 h-2"></div>
           </div>
 
-          <!-- Mic Push-to-Talk Button -->
+          <!-- Mic Push-to-Talk Button & Voice Settings -->
           <div class="flex items-center gap-2">
             <button onclick="toggleVoiceInput()" id="micBtn" class="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-brand-500/25 transition">
               <i data-lucide="mic" id="micIcon" class="w-4 h-4"></i>
@@ -184,10 +196,25 @@
               <i data-lucide="volume-x" class="w-4 h-4"></i>
             </button>
           </div>
+
+          <!-- Speed Rate & Sound FX Bar -->
+          <div class="flex items-center justify-between text-[11px] text-slate-400 bg-slate-950/60 p-2 rounded-xl border border-slate-800/80">
+            <div class="flex items-center gap-1.5">
+              <span>Speech Rate:</span>
+              <select id="voiceRateSelect" onchange="setSpeechRate(this.value)" class="bg-slate-900 text-slate-300 rounded px-1.5 py-0.5 border border-slate-800 text-[10px]">
+                <option value="0.9">0.9x (Relaxed)</option>
+                <option value="1.0" selected>1.0x (Normal)</option>
+                <option value="1.15">1.15x (Brisk)</option>
+              </select>
+            </div>
+            <button onclick="toggleSoundFX()" id="soundFxBtn" class="flex items-center gap-1 text-emerald-400 font-semibold">
+              <i data-lucide="volume-2" class="w-3.5 h-3.5"></i> UI Sound ON
+            </button>
+          </div>
         </div>
       </div>
 
-      <!-- ROLE CAPABILITIES & PERMISSION MATRIX CARD -->
+      <!-- ROLE CAPABILITIES CARD -->
       <div class="glass-card p-5 space-y-3">
         <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
           <span class="flex items-center gap-1.5"><i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> Role Capabilities</span>
@@ -196,28 +223,28 @@
         <div id="roleCapabilitiesList" class="space-y-2 text-xs"></div>
       </div>
 
-      <!-- APPLICATION-LAYER SECURITY AUDIT LOG -->
+      <!-- SECURITY AUDIT DRAWER -->
       <div class="glass-card p-5 space-y-3">
         <div class="flex items-center justify-between">
           <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
             <i data-lucide="lock" class="w-4 h-4 text-indigo-400"></i> Live Security Guardrails
           </h4>
           <button onclick="testSecurityAttack()" class="text-[10px] px-2 py-0.5 rounded bg-rose-500/10 text-rose-400 border border-rose-500/30 font-semibold hover:bg-rose-500/20">
-            Simulate Injection
+            Simulate Attack
           </button>
         </div>
-        <div id="securityLogBox" class="mono-font text-[11px] bg-slate-950 p-3 rounded-xl border border-slate-800 h-28 overflow-y-auto space-y-1 text-slate-400">
+        <div id="securityLogBox" class="mono-font text-[11px] bg-slate-950 p-3 rounded-xl border border-slate-800 h-24 overflow-y-auto space-y-1 text-slate-400">
           <div class="text-emerald-400">[SYSTEM] Application-layer RBAC initialized. Protection ACTIVE.</div>
         </div>
       </div>
 
     </div>
 
-    <!-- RIGHT COLUMN: CHAT INTERFACE & HUMAN ESCALATION (7 Cols) -->
-    <div class="lg:col-span-7 flex flex-col h-[750px] glass-card p-6 relative">
+    <!-- RIGHT COLUMN: CHAT INTERFACE & CONTEXT MEMORY (7 Cols) -->
+    <div class="lg:col-span-7 flex flex-col h-[780px] glass-card p-6 relative">
       
       <!-- Chat Header -->
-      <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
         <div>
           <h3 class="font-extrabold text-base text-white flex items-center gap-2">
             <span id="chatPersonaTitle">Aarav's Academic Assistant</span>
@@ -232,21 +259,32 @@
           <button onclick="triggerEscalation('management')" class="text-xs px-3 py-1.5 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20 font-semibold hover:bg-rose-500/20 transition flex items-center gap-1">
             <i data-lucide="building-2" class="w-3.5 h-3.5"></i> Contact Management
           </button>
+          <button onclick="downloadTranscript()" class="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white" title="Export Chat Transcript">
+            <i data-lucide="download" class="w-4 h-4"></i>
+          </button>
         </div>
       </div>
 
+      <!-- Active Memory Context Chips -->
+      <div class="py-2 flex items-center gap-2 text-[10px] text-slate-400 border-b border-slate-800/60 overflow-x-auto">
+        <span class="font-bold uppercase tracking-wider text-slate-500">Active Context:</span>
+        <span id="ctxEntity" class="px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">Student: Aarav (10-A)</span>
+        <span id="ctxAttendance" class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">Attendance: 94.5%</span>
+        <span id="ctxSession" class="px-2 py-0.5 rounded bg-slate-800 text-slate-300">RBAC Verified</span>
+      </div>
+
       <!-- Quick Action Query Pills -->
-      <div class="py-3 flex gap-2 overflow-x-auto border-b border-slate-800/60" id="quickPromptsContainer"></div>
+      <div class="py-2.5 flex gap-2 overflow-x-auto border-b border-slate-800/60" id="quickPromptsContainer"></div>
 
       <!-- Chat Messages Scroll Container -->
-      <div id="chatMessages" class="flex-1 overflow-y-auto py-4 space-y-4 text-sm">
+      <div id="chatMessages" class="flex-1 overflow-y-auto py-3 space-y-4 text-sm">
         <!-- Initial Greeting -->
         <div class="flex gap-3">
           <div class="w-8 h-8 rounded-xl bg-brand-600/30 border border-brand-500/40 flex items-center justify-center text-brand-300 shrink-0">
             <i data-lucide="bot" class="w-4 h-4"></i>
           </div>
           <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl max-w-[85%] text-slate-200 text-xs leading-relaxed space-y-2">
-            <p id="initialGreetingText">Hello Aarav! I'm your XYZ AI Academic Assistant. How can I help you today? You can ask me "What is my attendance?" or inquire about tests.</p>
+            <p id="initialGreetingText">Hello Aarav! I'm your XYZ AI Academic Assistant. How can I help you today? You can ask "What is my attendance?" or inquire about your upcoming exams.</p>
           </div>
         </div>
       </div>
@@ -258,7 +296,7 @@
         </div>
         <p id="escalationConfirmText" class="text-slate-300">Would you like me to connect you directly with Class Teacher Mrs. Sunita Verma via a callback request?</p>
         <div class="flex gap-2 pt-1">
-          <button onclick="confirmEscalation()" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg font-bold">Yes, Request Call</button>
+          <button onclick="confirmEscalation()" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg font-bold">Yes, Connect &amp; Call Now</button>
           <button onclick="cancelEscalation()" class="px-3 py-1.5 bg-slate-800 text-slate-400 hover:text-white rounded-lg">Cancel</button>
         </div>
       </div>
@@ -281,7 +319,7 @@
 
   </section>
 
-  <!-- VIEW 2: 01. STUDENT PORTAL -->
+  <!-- VIEW 2: 01. STUDENT PORTAL (With Study Aids & Exam Timers) -->
   <section id="view-student" class="view-panel hidden flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
     <div class="flex items-center justify-between bg-slate-900/90 border border-slate-800 p-4 rounded-2xl">
       <div class="flex items-center gap-3">
@@ -298,7 +336,7 @@
       </button>
     </div>
 
-    <!-- Student Metric Cards -->
+    <!-- Student Metric Cards & Exam Countdown -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
       <div class="glass-card p-5">
         <span class="text-xs text-slate-400 font-semibold">Attendance Rate</span>
@@ -312,13 +350,14 @@
       </div>
       <div class="glass-card p-5">
         <span class="text-xs text-slate-400 font-semibold">Upcoming Exam</span>
-        <div class="text-2xl font-bold text-amber-400 mt-1">Mathematics</div>
-        <span class="text-[11px] text-slate-500 mt-1 block">Tomorrow @ 9:00 AM</span>
+        <div class="text-xl font-bold text-amber-400 mt-1">Mathematics Mid-Term</div>
+        <span class="text-[11px] text-amber-300 font-mono mt-1 block" id="examCountdown">Starts in 14h 28m</span>
       </div>
       <div class="glass-card p-5">
-        <span class="text-xs text-slate-400 font-semibold">Pending Submissions</span>
-        <div class="text-3xl font-extrabold text-purple-400 mt-1">1 Assignment</div>
-        <span class="text-[11px] text-slate-500 mt-1 block">Science Lab Report</span>
+        <span class="text-xs text-slate-400 font-semibold">Quick AI Flashcards</span>
+        <button onclick="launchAIWithRole('student'); sendQuickPrompt('Give me 3 quick math revision flashcards for tomorrow');" class="mt-2 text-xs px-3 py-1.5 rounded-lg bg-indigo-600/30 text-indigo-300 border border-indigo-500/40 font-bold hover:bg-indigo-600/50 w-full text-center">
+          ⚡ Generate Flashcards
+        </button>
       </div>
     </div>
 
@@ -350,7 +389,7 @@
     </div>
   </section>
 
-  <!-- VIEW 3: 02. PARENT PORTAL -->
+  <!-- VIEW 3: 02. PARENT PORTAL (With Fee Receipt Generator) -->
   <section id="view-parent" class="view-panel hidden flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
     <div class="flex items-center justify-between bg-slate-900/90 border border-slate-800 p-4 rounded-2xl">
       <div class="flex items-center gap-3">
@@ -379,10 +418,14 @@
         <div class="text-3xl font-extrabold text-pink-400 mt-1">91.2%</div>
         <span class="text-[11px] text-slate-500 mt-1 block">164 / 180 Days (Target &gt; 85%)</span>
       </div>
-      <div class="glass-card p-5">
-        <span class="text-xs text-slate-400 font-semibold">School Fee Status</span>
-        <div class="text-3xl font-extrabold text-emerald-400 mt-1">Paid in Full</div>
-        <span class="text-[11px] text-slate-500 mt-1 block">Next installment due: Nov 2026</span>
+      <div class="glass-card p-5 flex flex-col justify-between">
+        <div>
+          <span class="text-xs text-slate-400 font-semibold">School Fee Status</span>
+          <div class="text-2xl font-extrabold text-emerald-400 mt-1">Paid in Full (Q1 &amp; Q2)</div>
+        </div>
+        <button onclick="generateMockFeeReceipt()" class="mt-2 text-[11px] px-3 py-1.5 rounded-lg bg-emerald-600/20 border border-emerald-500/30 text-emerald-300 font-bold flex items-center justify-center gap-1.5">
+          <i data-lucide="receipt" class="w-3.5 h-3.5"></i> Download Fee Receipt
+        </button>
       </div>
       <div class="glass-card p-5">
         <span class="text-xs text-slate-400 font-semibold">Assigned Class Teacher</span>
@@ -527,7 +570,7 @@
     </div>
   </section>
 
-  <!-- VIEW 5: 03. MANAGEMENT / PRINCIPAL PORTAL -->
+  <!-- VIEW 5: 03. MANAGEMENT / PRINCIPAL PORTAL (With Heatmap) -->
   <section id="view-management" class="view-panel hidden flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
     <div class="flex items-center justify-between bg-slate-900/90 border border-slate-800 p-4 rounded-2xl">
       <div class="flex items-center gap-3">
@@ -558,7 +601,7 @@
       </div>
       <div class="glass-card p-5">
         <span class="text-xs text-slate-400 font-semibold">Open Escalations</span>
-        <div class="text-3xl font-extrabold text-rose-400 mt-1" id="principalEscalationsCount">2 Pending</div>
+        <div class="text-3xl font-extrabold text-rose-400 mt-1">2 Pending</div>
         <span class="text-[11px] text-slate-500 mt-1 block">Parent Concerns Assigned</span>
       </div>
       <div class="glass-card p-5">
@@ -568,35 +611,94 @@
       </div>
     </div>
 
-    <!-- Class-Wise Attendance Performance Matrix -->
+    <!-- Interactive Class Attendance Heatmap -->
     <div class="glass-card p-6 space-y-4">
-      <h3 class="text-sm font-bold text-white flex items-center gap-2">
-        <i data-lucide="bar-chart-3" class="w-4 h-4 text-amber-400"></i> Grade-Wise Attendance Analytics
-      </h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-        <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-1">
-          <div class="font-bold text-slate-200">Grade 9 (All Sections)</div>
-          <div class="text-xl font-extrabold text-emerald-400">95.4%</div>
-          <div class="text-slate-400">312 / 327 Students</div>
-        </div>
-        <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-1">
-          <div class="font-bold text-slate-200">Grade 10 (All Sections)</div>
-          <div class="text-xl font-extrabold text-amber-400">92.8%</div>
-          <div class="text-slate-400">315 / 340 Students</div>
-        </div>
-        <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-1">
-          <div class="font-bold text-slate-200">Grade 11 (Science &amp; Comm)</div>
-          <div class="text-xl font-extrabold text-blue-400">91.0%</div>
-          <div class="text-slate-400">298 / 328 Students</div>
-        </div>
-        <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-1">
-          <div class="font-bold text-slate-200">Grade 12 (Board Batch)</div>
-          <div class="text-xl font-extrabold text-teal-400">94.2%</div>
-          <div class="text-slate-400">315 / 341 Students</div>
-        </div>
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <i data-lucide="grid" class="w-4 h-4 text-amber-400"></i> School-Wide Class Attendance Heatmap
+        </h3>
+        <span class="text-[11px] text-slate-400 font-mono">Live Sync Active</span>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 text-center text-xs">
+        <div class="p-3 bg-emerald-950/40 border border-emerald-500/40 rounded-xl"><span class="block text-slate-400 text-[10px]">9-A</span><span class="font-black text-emerald-400 text-sm">96%</span></div>
+        <div class="p-3 bg-emerald-950/40 border border-emerald-500/40 rounded-xl"><span class="block text-slate-400 text-[10px]">9-B</span><span class="font-black text-emerald-400 text-sm">94%</span></div>
+        <div class="p-3 bg-emerald-950/40 border border-emerald-500/40 rounded-xl"><span class="block text-slate-400 text-[10px]">10-A</span><span class="font-black text-emerald-400 text-sm">95%</span></div>
+        <div class="p-3 bg-amber-950/40 border border-amber-500/40 rounded-xl"><span class="block text-slate-400 text-[10px]">10-B</span><span class="font-black text-amber-400 text-sm">89%</span></div>
+        <div class="p-3 bg-emerald-950/40 border border-emerald-500/40 rounded-xl"><span class="block text-slate-400 text-[10px]">11-Sci</span><span class="font-black text-emerald-400 text-sm">93%</span></div>
+        <div class="p-3 bg-amber-950/40 border border-amber-500/40 rounded-xl"><span class="block text-slate-400 text-[10px]">11-Com</span><span class="font-black text-amber-400 text-sm">88%</span></div>
+        <div class="p-3 bg-emerald-950/40 border border-emerald-500/40 rounded-xl"><span class="block text-slate-400 text-[10px]">12-Sci</span><span class="font-black text-emerald-400 text-sm">95%</span></div>
+        <div class="p-3 bg-emerald-950/40 border border-emerald-500/40 rounded-xl"><span class="block text-slate-400 text-[10px]">12-Com</span><span class="font-black text-emerald-400 text-sm">92%</span></div>
       </div>
     </div>
   </section>
+
+  <!-- LIVE CALL & ESCALATION SIMULATOR MODAL OVERLAY -->
+  <div id="callSimulatorModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="glass-card max-w-sm w-full p-6 text-center space-y-6 relative border-indigo-500/40 animate-fade-in shadow-2xl">
+      <!-- Pulsing Call Icon -->
+      <div class="mx-auto w-20 h-20 rounded-full bg-gradient-to-tr from-indigo-600 to-brand-400 flex items-center justify-center pulse-glow">
+        <i data-lucide="phone-call" class="w-8 h-8 text-white"></i>
+      </div>
+      
+      <div>
+        <h4 class="text-lg font-bold text-white" id="callTargetName">Mrs. Sunita Verma (Class Teacher)</h4>
+        <p class="text-xs text-indigo-300 mt-1" id="callStatusText">Connecting Call (Simulated)...</p>
+        <p class="text-[11px] font-mono text-slate-400 mt-2" id="callTimer">00:00</p>
+      </div>
+
+      <!-- Verified Dispatch Badge -->
+      <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-[11px] text-slate-300">
+        <span class="text-slate-500 block text-[10px] uppercase font-bold">Verified Ticket Reference:</span>
+        <span class="font-mono font-bold text-amber-400" id="callTicketId">REQ-ESC-7892</span>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex justify-center gap-4">
+        <button onclick="endSimulatedCall()" class="px-6 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold flex items-center gap-2 shadow-lg shadow-rose-600/30">
+          <i data-lucide="phone-off" class="w-4 h-4"></i> End Call
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMMAND PALETTE (Ctrl+K / ⌘K) MODAL -->
+  <div id="commandPaletteModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-start justify-center pt-24 p-4" onclick="if(event.target===this) closeCommandPalette()">
+    <div class="glass-card max-w-xl w-full p-4 space-y-3 border-indigo-500/30 shadow-2xl">
+      <div class="relative">
+        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+        <input 
+          type="text" 
+          id="commandPaletteInput" 
+          placeholder="Type a command or jump to persona (e.g. 'Student', 'Mark Absent', 'Hindi')..." 
+          oninput="filterCommandPalette(this.value)"
+          class="w-full bg-slate-950 border border-slate-800 text-slate-100 text-xs rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:border-brand-500"
+        />
+      </div>
+      <div class="max-h-64 overflow-y-auto space-y-1 text-xs" id="commandPaletteList">
+        <!-- Default Suggestions -->
+        <button onclick="executePaletteCommand('role-student')" class="w-full text-left p-2.5 rounded-lg hover:bg-slate-800/80 flex items-center justify-between text-slate-200">
+          <span class="flex items-center gap-2"><i data-lucide="graduation-cap" class="w-4 h-4 text-blue-400"></i> Switch to Student Persona</span>
+          <span class="mono-font text-[10px] text-slate-500">Jump</span>
+        </button>
+        <button onclick="executePaletteCommand('role-parent')" class="w-full text-left p-2.5 rounded-lg hover:bg-slate-800/80 flex items-center justify-between text-slate-200">
+          <span class="flex items-center gap-2"><i data-lucide="heart" class="w-4 h-4 text-pink-400"></i> Switch to Parent Persona</span>
+          <span class="mono-font text-[10px] text-slate-500">Jump</span>
+        </button>
+        <button onclick="executePaletteCommand('role-teacher')" class="w-full text-left p-2.5 rounded-lg hover:bg-slate-800/80 flex items-center justify-between text-slate-200">
+          <span class="flex items-center gap-2"><i data-lucide="book-open" class="w-4 h-4 text-teal-400"></i> Switch to Teacher Persona</span>
+          <span class="mono-font text-[10px] text-slate-500">Jump</span>
+        </button>
+        <button onclick="executePaletteCommand('role-principal')" class="w-full text-left p-2.5 rounded-lg hover:bg-slate-800/80 flex items-center justify-between text-slate-200">
+          <span class="flex items-center gap-2"><i data-lucide="building" class="w-4 h-4 text-amber-400"></i> Switch to Principal Suite</span>
+          <span class="mono-font text-[10px] text-slate-500">Jump</span>
+        </button>
+        <button onclick="executePaletteCommand('action-escalate')" class="w-full text-left p-2.5 rounded-lg hover:bg-slate-800/80 flex items-center justify-between text-slate-200">
+          <span class="flex items-center gap-2"><i data-lucide="phone-call" class="w-4 h-4 text-rose-400"></i> Trigger Human Escalation Call</span>
+          <span class="mono-font text-[10px] text-slate-500">Action</span>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- FOOTER -->
   <footer class="border-t border-slate-800/80 bg-slate-950/80 py-4 text-center text-xs text-slate-500">
@@ -613,7 +715,7 @@
     </div>
   </footer>
 
-  <!-- JAVASCRIPT ENGINE -->
+  <!-- JAVASCRIPT ENGINE & ADVANCED MULTIMODAL SIMULATOR -->
   <script>
     // ─── STATE MANAGEMENT ────────────────────────────────────────────────────────
     let currentRole = 'student'; // 'student' | 'parent' | 'teacher' | 'principal'
@@ -626,6 +728,11 @@
     let mouthOpenness = 0;
     let eyeBlinkTimer = 0;
     let isBlinking = false;
+    let speechRate = 1.0;
+    let soundFXEnabled = true;
+    let mousePos = { x: 120, y: 120 };
+    let callTimerInterval = null;
+    let callSeconds = 0;
 
     // Mock ERP Database per PRD Spec
     const MOCK_ERP_DB = {
@@ -635,7 +742,7 @@
         presentDays: 170, 
         totalDays: 180, 
         class: '10-A',
-        upcomingExam: 'Mathematics on Monday @ 9:00 AM'
+        upcomingExam: 'Mathematics Mid-Term'
       },
       parent: { 
         childName: 'Rahul Sharma', 
@@ -649,12 +756,7 @@
         assignedClass: '10-A', 
         students: ['Aarav', 'Rahul', 'Priya', 'Rohan'], 
         classAttendancePct: 95.0,
-        roster: {
-          'Aarav': 'Present',
-          'Rahul': 'Present',
-          'Priya': 'Present',
-          'Rohan': 'Absent'
-        }
+        roster: { 'Aarav': 'Present', 'Rahul': 'Present', 'Priya': 'Present', 'Rohan': 'Absent' }
       },
       principal: { 
         schoolOverallAttendancePct: 92.8, 
@@ -671,11 +773,12 @@
         personaName: "Student Academic Assistant",
         sub: "Friendly & supportive tone for students",
         color: "blue",
+        auraClass: "aura-student",
         greeting: "Hello Aarav! I'm your XYZ AI Academic Assistant. How can I help you today? You can ask 'What is my attendance?' or inquire about your upcoming exams.",
         quickPrompts: ["What is my attendance?", "When is my math test?", "Talk to Teacher"],
         capabilities: [
           { text: "View own attendance & test dates", allowed: true },
-          { text: "Ask homework & academic doubts", allowed: true },
+          { text: "Ask homework & study doubts", allowed: true },
           { text: "Escalate issues to class teacher", allowed: true },
           { text: "Modify school or peer records", allowed: false }
         ]
@@ -685,12 +788,13 @@
         personaName: "Caring Parent Support Assistant",
         sub: "Caring & patient support for parents",
         color: "pink",
+        auraClass: "aura-parent",
         greeting: "Namaste Mr. Rajesh! I am XYZ Parent Assistant. Rahul currently has 91.2% attendance. Would you like to view his recent logs or talk to his teacher?",
-        quickPrompts: ["How much attendance does my child have?", "Show recent absences", "Talk to Teacher"],
+        quickPrompts: ["How much attendance does my child have?", "Show fee status", "Talk to Teacher"],
         capabilities: [
           { text: "View child's attendance & grades", allowed: true },
           { text: "Request callback with class teacher", allowed: true },
-          { text: "Check school fee & calendar", allowed: true },
+          { text: "Download school fee receipts", allowed: true },
           { text: "Access other students' private records", allowed: false }
         ]
       },
@@ -699,6 +803,7 @@
         personaName: "Professional Teaching Assistant",
         sub: "Efficient management for teachers & staff",
         color: "teal",
+        auraClass: "aura-teacher",
         greeting: "Good day Mrs. Sunita! 38 out of 40 students are present today in Class 10-A. You can tell me 'Mark Rahul absent today' or ask for the class roster.",
         quickPrompts: ["Mark Rahul absent today", "What is class attendance?", "Show absent students"],
         capabilities: [
@@ -713,6 +818,7 @@
         personaName: "Management & Analytics Assistant",
         sub: "School-wide intelligence for Principal",
         color: "amber",
+        auraClass: "aura-principal",
         greeting: "Good day Dr. Roy! Overall school attendance today stands at 92.8% (1,240 of 1,336 students). Faculty attendance is 98.2%. How can I assist you?",
         quickPrompts: ["What is the overall attendance?", "Staff attendance analytics", "Pending parent escalations"],
         capabilities: [
@@ -774,13 +880,15 @@
       initAvatarCanvas();
       renderPersona();
       initSpeechRecognition();
+      setupCursorTracking();
+      setupKeyboardShortcuts();
     });
 
     // ─── NAVIGATION VIEW SWITCHER ────────────────────────────────────────────────
     function switchView(viewName) {
       document.querySelectorAll('.view-panel').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.nav-tab').forEach(el => {
-        el.className = "nav-tab px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1.5";
+        el.className = "nav-tab px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1.5";
       });
 
       const target = document.getElementById(`view-${viewName}`);
@@ -788,7 +896,7 @@
 
       const activeNav = document.getElementById(`nav-${viewName}`);
       if (activeNav) {
-        activeNav.className = "nav-tab px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-brand-600 text-white shadow";
+        activeNav.className = "nav-tab px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-brand-600 text-white shadow";
       }
       lucide.createIcons();
     }
@@ -802,6 +910,10 @@
     function setRole(role) {
       currentRole = role;
       
+      // Dynamic Aura update
+      const body = document.getElementById('mainBody');
+      body.className = `min-h-screen flex flex-col antialiased selection:bg-brand-500/30 selection:text-white transition-all duration-700 ${PERSONAS[role].auraClass}`;
+
       // Update role buttons UI
       document.querySelectorAll('.role-btn').forEach(b => {
         b.className = "role-btn py-1.5 rounded-lg font-bold transition flex flex-col items-center gap-1 text-slate-400 hover:text-white";
@@ -814,6 +926,7 @@
 
       document.getElementById('activeRoleTag').textContent = `${role.toUpperCase()} MODE`;
       renderPersona();
+      playChime('switch');
       logSecurity(`[RBAC] Switched active persona to ${role.toUpperCase()} (Identity Verified).`);
     }
 
@@ -830,6 +943,10 @@
       document.getElementById('personaNameText').textContent = p.personaName;
       document.getElementById('initialGreetingText').textContent = p.greeting;
       document.getElementById('roleUserLabel').textContent = `user: ${currentRole === 'student' ? 'Aarav' : currentRole === 'parent' ? 'Mr. Rajesh' : currentRole === 'teacher' ? 'Mrs. Sunita' : 'Dr. Roy'}`;
+
+      // Update Memory Context
+      document.getElementById('ctxEntity').textContent = currentRole === 'student' ? 'Student: Aarav (10-A)' : currentRole === 'parent' ? 'Ward: Rahul (10-A)' : currentRole === 'teacher' ? 'Class 10-A (Math)' : 'School: DPS Campus';
+      document.getElementById('ctxAttendance').textContent = currentRole === 'student' ? 'Attendance: 94.5%' : currentRole === 'parent' ? 'Ward Att: 91.2%' : currentRole === 'teacher' ? 'Class Att: 95.0%' : 'Total Att: 92.8%';
 
       // Render Capabilities
       const capList = document.getElementById('roleCapabilitiesList');
@@ -851,7 +968,16 @@
       lucide.createIcons();
     }
 
-    // ─── AI AVATAR CANVAS ENGINE (Lip Sync + Facial Reactions) ───────────────────
+    // ─── AI AVATAR CANVAS ENGINE (Real-Time Eye & Pupil Tracking + Lip Sync) ───────
+    function setupCursorTracking() {
+      const canvas = document.getElementById('avatarCanvas');
+      window.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        mousePos.x = e.clientX - rect.left;
+        mousePos.y = e.clientY - rect.top;
+      });
+    }
+
     function initAvatarCanvas() {
       const canvas = document.getElementById('avatarCanvas');
       const ctx = canvas.getContext('2d');
@@ -861,7 +987,7 @@
         const cx = canvas.width / 2;
         const cy = canvas.height / 2;
 
-        // Dynamic Glow based on Role
+        // Dynamic Accent based on Persona
         const roleColors = { student: '#3b82f6', parent: '#ec4899', teacher: '#14b8a6', principal: '#f59e0b' };
         const accent = roleColors[currentRole] || '#6366f1';
 
@@ -878,8 +1004,8 @@
 
         // Eye Blink Logic
         eyeBlinkTimer++;
-        if (eyeBlinkTimer > 160 && eyeBlinkTimer < 172) isBlinking = true;
-        else if (eyeBlinkTimer >= 172) { isBlinking = false; eyeBlinkTimer = 0; }
+        if (eyeBlinkTimer > 170 && eyeBlinkTimer < 182) isBlinking = true;
+        else if (eyeBlinkTimer >= 182) { isBlinking = false; eyeBlinkTimer = 0; }
 
         // Left & Right Eyes
         const eyeY = cy - 15;
@@ -896,17 +1022,34 @@
           ctx.lineTo(rightEyeX + 12, eyeY);
           ctx.stroke();
         } else {
+          // Eye White background
+          ctx.fillStyle = '#0f172a';
+          ctx.beginPath();
+          ctx.arc(leftEyeX, eyeY, 11, 0, Math.PI * 2);
+          ctx.arc(rightEyeX, eyeY, 11, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = accent;
+          ctx.stroke();
+
+          // Pupil Offset Calculation (Smooth Gaze Direction toward Mouse)
+          const dx = (mousePos.x - cx) / 25;
+          const dy = (mousePos.y - cy) / 25;
+          const clampedDx = Math.max(-4, Math.min(4, dx));
+          const clampedDy = Math.max(-3, Math.min(3, dy));
+
+          // Iris
           ctx.fillStyle = accent;
           ctx.beginPath();
-          ctx.arc(leftEyeX, eyeY, 8, 0, Math.PI * 2);
-          ctx.arc(rightEyeX, eyeY, 8, 0, Math.PI * 2);
+          ctx.arc(leftEyeX + clampedDx, eyeY + clampedDy, 6, 0, Math.PI * 2);
+          ctx.arc(rightEyeX + clampedDx, eyeY + clampedDy, 6, 0, Math.PI * 2);
           ctx.fill();
 
-          // Eye Pupils
+          // Pupils White Highlights
           ctx.fillStyle = '#ffffff';
           ctx.beginPath();
-          ctx.arc(leftEyeX - 2, eyeY - 2, 2.5, 0, Math.PI * 2);
-          ctx.arc(rightEyeX - 2, eyeY - 2, 2.5, 0, Math.PI * 2);
+          ctx.arc(leftEyeX + clampedDx - 1.5, eyeY + clampedDy - 1.5, 2, 0, Math.PI * 2);
+          ctx.arc(rightEyeX + clampedDx - 1.5, eyeY + clampedDy - 1.5, 2, 0, Math.PI * 2);
           ctx.fill();
         }
 
@@ -956,6 +1099,7 @@
 
       appendMessage('user', text);
       setAvatarExpression('Thinking');
+      playChime('send');
 
       setTimeout(() => {
         processAIQuery(text);
@@ -1009,6 +1153,8 @@
         if (lower.includes('attendance') || lower.includes('how much attendance')) {
           logSecurity(`[AUTH_PERMITTED] Student viewing own attendance.`);
           respondAI(t.attendance_student, 'Speaking');
+        } else if (lower.includes('flashcard') || lower.includes('revision')) {
+          respondAI(`📚 Quick Math Flashcards:\n1. Quadratic Formula: x = (-b ± √(b² - 4ac)) / (2a)\n2. Pythagorean theorem: a² + b² = c²\n3. Probability: P(E) = favorable outcomes / total outcomes. All the best Aarav!`, 'Speaking');
         } else if (lower.includes('test') || lower.includes('exam') || lower.includes('math')) {
           respondAI(`Your Mathematics Mid-Term test is scheduled for tomorrow at 9:00 AM in Room 204. Syllabus covers Chapters 1 to 5.`, 'Speaking');
         } else if (lower.includes('teacher') || lower.includes('talk to teacher') || lower.includes('help')) {
@@ -1026,8 +1172,8 @@
         if (lower.includes('attendance') || lower.includes('child')) {
           logSecurity(`[AUTH_PERMITTED] Parent viewing child's attendance.`);
           respondAI(t.attendance_parent, 'Speaking');
-        } else if (lower.includes('fee') || lower.includes('dues')) {
-          respondAI(`Rahul's school fee for Q2 is paid in full. The next installment of ₹14,500 is due on 15th November 2026.`, 'Speaking');
+        } else if (lower.includes('fee') || lower.includes('dues') || lower.includes('receipt')) {
+          respondAI(`Rahul's school fee for Q2 is paid in full (₹14,500). You can click 'Download Fee Receipt' in the parent dashboard.`, 'Speaking');
         } else if (lower.includes('teacher') || lower.includes('talk') || lower.includes('connect')) {
           triggerEscalation('teacher');
         } else {
@@ -1072,12 +1218,17 @@
     }
 
     // ─── TEXT-TO-SPEECH (TTS) & VOICE SYNTHESIS ──────────────────────────────────
+    function setSpeechRate(val) {
+      speechRate = parseFloat(val) || 1.0;
+    }
+
     function speakText(text) {
       if (!('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
 
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 1.0;
+      const cleanText = text.replace(/[*#_~]/g, '');
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      utterance.rate = speechRate;
       utterance.pitch = currentRole === 'parent' ? 1.05 : currentRole === 'student' ? 1.1 : 0.95;
 
       const langMap = { en: 'en-US', hi: 'hi-IN', ta: 'ta-IN', te: 'te-IN' };
@@ -1089,13 +1240,13 @@
       utterance.onend = () => {
         isSpeaking = false;
         animateWaveform(false);
-        setAvatarExpression('Idle');
+        setAvatarExpression('Idle (Eye Tracking ON)');
       };
 
       utterance.onerror = () => {
         isSpeaking = false;
         animateWaveform(false);
-        setAvatarExpression('Idle');
+        setAvatarExpression('Idle (Eye Tracking ON)');
       };
 
       window.speechSynthesis.speak(utterance);
@@ -1107,7 +1258,7 @@
       }
       isSpeaking = false;
       animateWaveform(false);
-      setAvatarExpression('Idle');
+      setAvatarExpression('Idle (Eye Tracking ON)');
     }
 
     // ─── SPEECH-TO-TEXT (STT) VOICE RECOGNITION ──────────────────────────────────
@@ -1127,6 +1278,7 @@
         document.getElementById('micText').textContent = "Listening... Speak now";
         document.getElementById('micBtn').classList.add('pulse-glow');
         setAvatarExpression('Listening');
+        playChime('mic');
         animateWaveform(true);
       };
 
@@ -1167,10 +1319,10 @@
       document.getElementById('micText').textContent = "Speak to XYZ AI (Mic)";
       document.getElementById('micBtn').classList.remove('pulse-glow');
       animateWaveform(false);
-      setAvatarExpression('Idle');
+      setAvatarExpression('Idle (Eye Tracking ON)');
     }
 
-    // ─── HUMAN ESCALATION PROTOCOL (Verified State Machine) ───────────────────────
+    // ─── HUMAN ESCALATION & LIVE CALL SIMULATOR ──────────────────────────────────
     function triggerEscalation(target) {
       pendingEscalationTarget = target;
       const targetName = target === 'teacher' ? 'Class Teacher Mrs. Sunita Verma' : 'Principal Dr. Roy / Management';
@@ -1186,16 +1338,149 @@
     function confirmEscalation() {
       document.getElementById('escalationConfirmBox').classList.add('hidden');
       const reqId = Math.floor(1000 + Math.random() * 9000);
-      const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
+      const targetName = pendingEscalationTarget === 'teacher' ? 'Mrs. Sunita Verma (Class Teacher)' : 'Principal Dr. Roy';
       
-      const confirmMsg = `${t.escalation_success}${reqId}. Estimated callback window: within 2 hours.`;
-      respondAI(confirmMsg, 'Speaking');
+      // Open Live Simulated Call Overlay
+      document.getElementById('callTargetName').textContent = targetName;
+      document.getElementById('callTicketId').textContent = `REQ-ESC-${reqId}`;
+      document.getElementById('callStatusText').textContent = "Connecting Call (Simulated)...";
+      document.getElementById('callTimer').textContent = "00:00";
+      document.getElementById('callSimulatorModal').classList.remove('hidden');
+      document.getElementById('callSimulatorModal').classList.add('flex');
+      
+      playChime('call');
+      callSeconds = 0;
+      clearInterval(callTimerInterval);
+      
+      setTimeout(() => {
+        document.getElementById('callStatusText').textContent = "Call Connected • Audio Stream Active";
+        callTimerInterval = setInterval(() => {
+          callSeconds++;
+          const mins = String(Math.floor(callSeconds / 60)).padStart(2, '0');
+          const secs = String(callSeconds % 60).padStart(2, '0');
+          document.getElementById('callTimer').textContent = `${mins}:${secs}`;
+        }, 1000);
+      }, 2000);
+
       logSecurity(`[ESCALATION] Verified dispatch token generated: REQ-ESC-${reqId} for ${pendingEscalationTarget.toUpperCase()}.`);
+    }
+
+    function endSimulatedCall() {
+      clearInterval(callTimerInterval);
+      document.getElementById('callSimulatorModal').classList.add('hidden');
+      document.getElementById('callSimulatorModal').classList.remove('flex');
+      
+      const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
+      const reqId = document.getElementById('callTicketId').textContent;
+      respondAI(`Simulated call ended. Summary and action items logged under reference ${reqId}.`, 'Idle (Eye Tracking ON)');
     }
 
     function cancelEscalation() {
       document.getElementById('escalationConfirmBox').classList.add('hidden');
-      respondAI(`Escalation request cancelled. Let me know if there's anything else I can help you with!`, 'Idle');
+      respondAI(`Escalation request cancelled. Let me know if there's anything else I can help you with!`, 'Idle (Eye Tracking ON)');
+    }
+
+    // ─── COMMAND PALETTE (⌘K) ───────────────────────────────────────────────────
+    function setupKeyboardShortcuts() {
+      window.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+          e.preventDefault();
+          openCommandPalette();
+        }
+        if (e.key === 'Escape') {
+          closeCommandPalette();
+        }
+      });
+    }
+
+    function openCommandPalette() {
+      document.getElementById('commandPaletteModal').classList.remove('hidden');
+      document.getElementById('commandPaletteModal').classList.add('flex');
+      document.getElementById('commandPaletteInput').focus();
+      lucide.createIcons();
+    }
+
+    function closeCommandPalette() {
+      document.getElementById('commandPaletteModal').classList.add('hidden');
+      document.getElementById('commandPaletteModal').classList.remove('flex');
+    }
+
+    function executePaletteCommand(cmd) {
+      closeCommandPalette();
+      if (cmd === 'role-student') setRole('student');
+      else if (cmd === 'role-parent') setRole('parent');
+      else if (cmd === 'role-teacher') setRole('teacher');
+      else if (cmd === 'role-principal') setRole('principal');
+      else if (cmd === 'action-escalate') triggerEscalation('teacher');
+    }
+
+    function filterCommandPalette(q) {
+      const list = document.getElementById('commandPaletteList');
+      const items = list.querySelectorAll('button');
+      items.forEach(btn => {
+        const text = btn.textContent.toLowerCase();
+        if (text.includes(q.toLowerCase())) btn.style.display = 'flex';
+        else btn.style.display = 'none';
+      });
+    }
+
+    // ─── PRODUCTIVITY TOOLS & EXPORTS ───────────────────────────────────────────
+    function generateMockFeeReceipt() {
+      alert("✅ Fee Receipt Downloaded: Receipt #DPS-2026-9042 for Rahul Sharma (₹14,500 - Paid via NetBanking).");
+      logSecurity("[PARENT_ACTION] Downloaded Q2 fee receipt for Rahul Sharma.");
+    }
+
+    function downloadTranscript() {
+      const messages = Array.from(document.querySelectorAll('#chatMessages > div')).map(el => el.textContent.trim()).join('\n---\n');
+      const blob = new Blob([`StudyLens XYZ AI School Assistant - Conversation Transcript\nDate: ${new Date().toLocaleString()}\nRole: ${currentRole.toUpperCase()}\n\n${messages}`], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `StudyLens_Transcript_${currentRole}_${Date.now()}.txt`;
+      a.click();
+      logSecurity("[EXPORT] Conversation transcript downloaded.");
+    }
+
+    // ─── AUDIO SYNTHESIS & SOUND CHIMES ─────────────────────────────────────────
+    function toggleSoundFX() {
+      soundFXEnabled = !soundFXEnabled;
+      document.getElementById('soundFxBtn').innerHTML = soundFXEnabled 
+        ? `<i data-lucide="volume-2" class="w-3.5 h-3.5"></i> UI Sound ON`
+        : `<i data-lucide="volume-x" class="w-3.5 h-3.5 text-slate-500"></i> UI Sound OFF`;
+      lucide.createIcons();
+    }
+
+    function playChime(type) {
+      if (!soundFXEnabled) return;
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        if (type === 'send') {
+          osc.frequency.setValueAtTime(440, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1);
+          gain.gain.setValueAtTime(0.08, ctx.currentTime);
+          gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.1);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.1);
+        } else if (type === 'switch') {
+          osc.frequency.setValueAtTime(587, ctx.currentTime);
+          gain.gain.setValueAtTime(0.05, ctx.currentTime);
+          gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.08);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.08);
+        } else if (type === 'mic') {
+          osc.frequency.setValueAtTime(523, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(659, ctx.currentTime + 0.15);
+          gain.gain.setValueAtTime(0.08, ctx.currentTime);
+          gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.15);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.15);
+        }
+      } catch (e) {}
     }
 
     // ─── QUICK ATTENDANCE TOGGLE (Staff Portal Integration) ──────────────────────
@@ -1230,7 +1515,7 @@
 
     function animateWaveform(active) {
       const bars = document.querySelectorAll('.wave-bar');
-      bars.forEach((bar, idx) => {
+      bars.forEach((bar) => {
         if (active) bar.classList.add('wave-anim');
         else bar.classList.remove('wave-anim');
       });
